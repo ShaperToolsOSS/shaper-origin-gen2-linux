@@ -1,0 +1,50 @@
+menu "Shaper Tools Drivers"
+
+config MCU_SPI
+	tristate "Base SPI Driver for STM32F411VE MCU"
+	select SPI_IMX_SHAPER
+	depends on ARCH_MXC && !SPI_IMX
+	help
+	  Say Y here if you want to enable Shaper Tools MCU SPI
+	  driver with support for STM32F4 firmware flashing
+
+config SPI_IMX_SHAPER
+	tristate "Shaper Tools patched IMX SPI Driver"
+	depends on ARCH_MXC && !SPI_IMX
+	help
+	  Say Y here if you want to enable Shaper Tool patched
+	  SPI master driver
+
+config REMOTEPROC_SHAPER
+	tristate "Shaper IMX8MM remoteproc support"
+	depends on ARCH_MXC && !IMX_REMOTEPROC
+	help
+	  Say y here to support iMX's remote processors (Cortex M4
+	  on iMX8MM) via the remote processor framework.
+
+config SHAPER_MCU_TTY
+	tristate "Shaper Tool RPMSG TTY Driver"
+	depends on HAVE_IMX_RPMSG
+	help
+	  Say Y here if you want to enable Shaper Tool RPMSG TTY
+	  implementation
+
+config SHAPER_MCU_LOG
+	tristate "Shaper Tool RPMSG MCU Log Driver"
+	depends on HAVE_IMX_RPMSG
+	help
+	  Say Y here if you want to enable Shaper Tool MCU RPMSG Log Driver
+
+config SHAPER_MCU_CAPTURE
+	tristate "Shaper Tool RPMSG MCU Capture Driver"
+	depends on HAVE_IMX_RPMSG
+	help
+	  Say Y here if you want to enable Shaper Tool MCU RPMSG Capture Driver
+
+config SHAPER_MCU_SPACES
+	tristate "Shaper Tool MCU Spaces Driver"
+	depends on IMX_MBOX
+	help
+	  Say Y here if you want to enable Shaper Tool MCU Spaces Driver
+
+endmenu

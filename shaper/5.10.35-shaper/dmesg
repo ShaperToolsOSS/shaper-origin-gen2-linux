@@ -1,0 +1,665 @@
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd034]
+[    0.000000] Linux version 5.10.35-shaper (rupert@mordor) (aarch64-poky-linux-gcc (GCC) 14.3.0, GNU ld (GNU Binutils) 2.43.1.20241111) #1 SMP PREEMPT Sat Aug 31 23:45:00 UTC 2019
+[    0.000000] Machine model: Shaper board
+[    0.000000] Reserved memory: created CMA memory pool at 0x000000008c000000, size 320 MiB
+[    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+[    0.000000] Reserved memory: created DMA memory pool at 0x00000000b8000000, size 0 MiB
+[    0.000000] OF: reserved mem: initialized node vdev0vring0@b8000000, compatible id shared-dma-pool
+[    0.000000] Reserved memory: created DMA memory pool at 0x00000000b8008000, size 0 MiB
+[    0.000000] OF: reserved mem: initialized node vdev0vring1@b8008000, compatible id shared-dma-pool
+[    0.000000] Reserved memory: created DMA memory pool at 0x00000000b8400000, size 1 MiB
+[    0.000000] OF: reserved mem: initialized node vdev0buffer@b8400000, compatible id shared-dma-pool
+[    0.000000] Reserved memory: created DMA memory pool at 0x00000000b8500000, size 0 MiB
+[    0.000000] OF: reserved mem: initialized node m4_spaces@b8500000, compatible id shared-dma-pool
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000040000000-0x00000000bfffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000040000000-0x000000004efdffff]
+[    0.000000]   node   0: [mem 0x000000004efe0000-0x000000004f2dffff]
+[    0.000000]   node   0: [mem 0x000000004f2e0000-0x00000000b7ffffff]
+[    0.000000]   node   0: [mem 0x00000000b8000000-0x00000000b800ffff]
+[    0.000000]   node   0: [mem 0x00000000b8010000-0x00000000b83fffff]
+[    0.000000]   node   0: [mem 0x00000000b8400000-0x00000000b853ffff]
+[    0.000000]   node   0: [mem 0x00000000b8540000-0x00000000bfffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000040000000-0x00000000bfffffff]
+[    0.000000] On node 0 totalpages: 524288
+[    0.000000]   DMA zone: 8192 pages used for memmap
+[    0.000000]   DMA zone: 0 pages reserved
+[    0.000000]   DMA zone: 524288 pages, LIFO batch:63
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.1 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+[    0.000000] psci: SMC Calling Convention v1.2
+[    0.000000] percpu: Embedded 34 pages/cpu s98584 r8192 d32488 u139264
+[    0.000000] pcpu-alloc: s98584 r8192 d32488 u139264 alloc=34*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+[    0.000000] Detected VIPT I-cache on CPU0
+[    0.000000] CPU features: detected: GIC system register CPU interface
+[    0.000000] CPU features: kernel page table isolation forced OFF by mitigations=off
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 516096
+[    0.000000] Kernel command line: nbd.nbds_max=1 active_partition=2 fbcon=logo-pos:center,logo-count:1,rotate:1 vt.global_cursor_default=0 consoleblank=0 no_console_suspend=1 audit=0 mitigations=off  console=ttymxc1 
+[    0.000000] Dentry cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] Memory: 1697288K/2097152K available (8510K kernel code, 1836K rwdata, 3156K rodata, 2432K init, 423K bss, 72184K reserved, 327680K cma-reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] rcu: Preemptible hierarchical RCU implementation.
+[    0.000000] 	Trampoline variant of Tasks RCU enabled.
+[    0.000000] 	Tracing variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] GICv3: GIC: Using split EOI/Deactivate mode
+[    0.000000] GICv3: 128 SPIs implemented
+[    0.000000] GICv3: 0 Extended SPIs implemented
+[    0.000000] GICv3: Distributor has no Range Selector support
+[    0.000000] GICv3: 16 PPIs implemented
+[    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x0000000038880000
+[    0.000000] ITS: No ITS available, not enabling LPIs
+[    0.000000] arch_timer: cp15 timer(s) running at 8.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x1d854df40, max_idle_ns: 440795202120 ns
+[    0.000004] sched_clock: 56 bits at 8MHz, resolution 125ns, wraps every 2199023255500ns
+[    0.000355] Console: colour dummy device 80x25
+[    0.000388] Calibrating delay loop (skipped), value calculated using timer frequency.. 16.00 BogoMIPS (lpj=32000)
+[    0.000399] pid_max: default: 32768 minimum: 301
+[    0.000482] LSM: Security Framework initializing
+[    0.000529] Mount-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+[    0.000541] Mountpoint-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+[    0.001199] spectre-v4 mitigation disabled by command-line option
+[    0.001809] rcu: Hierarchical SRCU implementation.
+[    0.002585] smp: Bringing up secondary CPUs ...
+[    0.002964] Detected VIPT I-cache on CPU1
+[    0.002995] GICv3: CPU1: found redistributor 1 region 0:0x00000000388a0000
+[    0.003037] CPU1: Booted secondary processor 0x0000000001 [0x410fd034]
+[    0.003450] Detected VIPT I-cache on CPU2
+[    0.003472] GICv3: CPU2: found redistributor 2 region 0:0x00000000388c0000
+[    0.003496] CPU2: Booted secondary processor 0x0000000002 [0x410fd034]
+[    0.003877] Detected VIPT I-cache on CPU3
+[    0.003899] GICv3: CPU3: found redistributor 3 region 0:0x00000000388e0000
+[    0.003922] CPU3: Booted secondary processor 0x0000000003 [0x410fd034]
+[    0.004003] smp: Brought up 1 node, 4 CPUs
+[    0.004018] SMP: Total of 4 processors activated.
+[    0.004023] CPU features: detected: 32-bit EL0 Support
+[    0.004029] CPU features: detected: CRC32 instructions
+[    0.004199] CPU: All CPU(s) started at EL2
+[    0.004219] alternatives: patching kernel code
+[    0.004773] devtmpfs: initialized
+[    0.010917] random: get_random_u32 called from bucket_table_alloc.isra.0+0xf0/0x11c with crng_init=0
+[    0.011364] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    0.011383] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.024378] pinctrl core: initialized pinctrl subsystem
+[    0.025264] NET: Registered protocol family 16
+[    0.032579] DMA: preallocated 256 KiB GFP_KERNEL pool for atomic allocations
+[    0.032893] DMA: preallocated 256 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.033079] DMA: preallocated 256 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.033634] thermal_sys: Registered thermal governor 'step_wise'
+[    0.033831] cpuidle: using governor menu
+[    0.034098] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+[    0.034189] ASID allocator initialised with 65536 entries
+[    0.034352] Serial: AMBA PL011 UART driver
+[    0.034416] imx mu driver is registered.
+[    0.034435] imx rpmsg driver is registered.
+[    0.060049] imx8mm-pinctrl 30330000.pinctrl: initialized IMX pinctrl driver
+[    0.060468] imx8m-hwspinlock 303b0000.sema1: initializing
+[    0.069932] cryptd: max_cpu_qlen set to 1000
+[    0.072518] gpio-imx8mm 30200000.gpio: initializing gpio-controller
+[    0.072606] gpio-imx8mm 30210000.gpio: initializing gpio-controller
+[    0.072659] gpio-imx8mm 30220000.gpio: initializing gpio-controller
+[    0.072711] gpio-imx8mm 30230000.gpio: initializing gpio-controller
+[    0.074256] VSYS_5V0: supplied by VSYS_24V0
+[    0.074658] VSYS_24V0-BACKLIGHT: supplied by VSYS_24V0
+[    0.075002] iommu: Default domain type: Translated 
+[    0.075265] SCSI subsystem initialized
+[    0.075438] usbcore: registered new interface driver usbfs
+[    0.075471] usbcore: registered new interface driver hub
+[    0.075504] usbcore: registered new device driver usb
+[    0.076702] mc: Linux media interface: v0.10
+[    0.076731] videodev: Linux video capture interface: v2.00
+[    0.076765] pps_core: LinuxPPS API ver. 1 registered
+[    0.076769] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.076782] PTP clock support registered
+[    0.076931] EDAC MC: Ver: 3.0.0
+[    0.078059] Bluetooth: Core ver 2.22
+[    0.078085] NET: Registered protocol family 31
+[    0.078089] Bluetooth: HCI device and connection manager initialized
+[    0.078099] Bluetooth: HCI socket layer initialized
+[    0.078109] Bluetooth: L2CAP socket layer initialized
+[    0.078121] Bluetooth: SCO socket layer initialized
+[    0.079084] clocksource: Switched to clocksource arch_sys_counter
+[    0.995313] NET: Registered protocol family 2
+[    0.995747] tcp_listen_portaddr_hash hash table entries: 1024 (order: 2, 16384 bytes, linear)
+[    0.995780] TCP established hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    0.995925] TCP bind hash table entries: 16384 (order: 6, 262144 bytes, linear)
+[    0.996142] TCP: Hash tables configured (established 16384 bind 16384)
+[    0.996226] UDP hash table entries: 1024 (order: 3, 32768 bytes, linear)
+[    0.996270] UDP-Lite hash table entries: 1024 (order: 3, 32768 bytes, linear)
+[    0.996403] NET: Registered protocol family 1
+[    0.996761] RPC: Registered named UNIX socket transport module.
+[    0.996766] RPC: Registered udp transport module.
+[    0.996770] RPC: Registered tcp transport module.
+[    0.996774] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    0.996783] PCI: CLS 0 bytes, default 64
+[    0.996931] Unpacking initramfs...
+[    1.032808] Freeing initrd memory: 10580K
+[    1.033541] hw perfevents: enabled with armv8_pmuv3 PMU driver, 7 counters available
+[    1.038720] Initialise system trusted keyrings
+[    1.038834] workingset: timestamp_bits=46 max_order=19 bucket_order=0
+[    1.043741] NFS: Registering the id_resolver key type
+[    1.043771] Key type id_resolver registered
+[    1.043775] Key type id_legacy registered
+[    1.043836] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+[    1.043846] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+[    1.080358] NET: Registered protocol family 38
+[    1.080368] async_tx: api initialized (async)
+[    1.080375] Key type asymmetric registered
+[    1.080380] Asymmetric key parser 'x509' registered
+[    1.080384] Asymmetric key parser 'pkcs8' registered
+[    1.080414] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
+[    1.080515] io scheduler bfq registered
+[    1.085731] M4 is started
+[    1.089946] imx_busfreq: probe of busfreq failed with error -22
+[    1.090036] Bus freq driver module loaded
+[    1.092791] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+[    1.094731] 30860000.serial: ttymxc0 at MMIO 0x30860000 (irq = 37, base_baud = 5000000) is a IMX
+[    1.095341] 30890000.serial: ttymxc1 at MMIO 0x30890000 (irq = 38, base_baud = 1500000) is a IMX
+[    1.095355] imx-uart 30890000.serial: Console IMX rounded baud rate from 114286 to 114300
+[    1.854433] printk: console [ttymxc1] enabled
+[    1.862355] imx-lcdif-crtc imx-lcdif-crtc.0: imx-lcdif-crtc path, original depth: 16
+[    1.868841] imx-lcdif-crtc imx-lcdif-crtc.0: imx-lcdif-crtc path, forced depth: 32
+[    1.875647] imx-drm 32c00000.bus:display-subsystem: bound imx-lcdif-crtc.0 (ops 0xffffffc0108fa9f0)
+[    1.883533] imx_sec_dsim_drv 32e10000.mipi_dsi: version number is 0x1060200
+[    1.889424] imx_sec_dsim_drv 32e10000.mipi_dsi: Failed to attach bridge: 32e10000.mipi_dsi
+[    1.896461] imx_sec_dsim_drv 32e10000.mipi_dsi: failed to bind sec dsim bridge: -517
+[    1.904540] loop: module loaded
+[    1.910296] libphy: Fixed MDIO Bus: probed
+[    1.914400] usbcore: registered new interface driver catc
+[    1.918528] usbcore: registered new interface driver kaweth
+[    1.922807] pegasus: v0.9.3 (2013/04/25), Pegasus/Pegasus II USB Ethernet driver
+[    1.928927] usbcore: registered new interface driver pegasus
+[    1.933312] usbcore: registered new interface driver rtl8150
+[    1.937707] usbcore: registered new interface driver r8152
+[    1.941919] usbcore: registered new interface driver lan78xx
+[    1.946310] usbcore: registered new interface driver asix
+[    1.950435] usbcore: registered new interface driver ax88179_178a
+[    1.955257] usbcore: registered new interface driver cdc_ether
+[    1.959833] usbcore: registered new interface driver cdc_eem
+[    1.964218] usbcore: registered new interface driver dm9601
+[    1.968517] usbcore: registered new interface driver sr9700
+[    1.972825] usbcore: registered new interface driver CoreChips
+[    1.977395] usbcore: registered new interface driver smsc75xx
+[    1.981875] usbcore: registered new interface driver smsc95xx
+[    1.986347] usbcore: registered new interface driver gl620a
+[    1.990644] usbcore: registered new interface driver net1080
+[    1.995030] usbcore: registered new interface driver plusb
+[    1.999245] usbcore: registered new interface driver MOSCHIP usb-ethernet driver
+[    2.005383] usbcore: registered new interface driver cdc_ncm
+[    2.009770] usbcore: registered new interface driver cdc_mbim
+[    2.014406] VFIO - User Level meta-driver version: 0.3
+[    2.018427] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    2.023718] ehci-pci: EHCI PCI platform driver
+[    2.026887] ehci-platform: EHCI generic platform driver
+[    2.031020] ehci-mxc: Freescale On-Chip EHCI Host driver
+[    2.035100] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    2.040002] ohci-pci: OHCI PCI platform driver
+[    2.043175] ohci-platform: OHCI generic platform driver
+[    2.047371] ehci-fsl: Freescale EHCI Host controller driver
+[    2.051731] usbcore: registered new interface driver cdc_acm
+[    2.056094] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+[    2.062823] usbcore: registered new interface driver cdc_wdm
+[    2.067209] usbcore: registered new interface driver usbtmc
+[    2.071588] usbcore: registered new interface driver uas
+[    2.075643] usbcore: registered new interface driver usb-storage
+[    2.080427] usbcore: registered new interface driver usbserial_generic
+[    2.085675] usbserial: USB Serial support registered for generic
+[    2.090408] usbcore: registered new interface driver cp210x
+[    2.094698] usbserial: USB Serial support registered for cp210x
+[    2.099341] usbcore: registered new interface driver pl2303
+[    2.103631] usbserial: USB Serial support registered for pl2303
+[    2.108276] usbcore: registered new interface driver usb_serial_simple
+[    2.113520] usbserial: USB Serial support registered for carelink
+[    2.118333] usbserial: USB Serial support registered for zio
+[    2.122709] usbserial: USB Serial support registered for funsoft
+[    2.127434] usbserial: USB Serial support registered for flashloader
+[    2.132505] usbserial: USB Serial support registered for google
+[    2.137141] usbserial: USB Serial support registered for libtransistor
+[    2.142385] usbserial: USB Serial support registered for vivopay
+[    2.147114] usbserial: USB Serial support registered for moto_modem
+[    2.152099] usbserial: USB Serial support registered for motorola_tetra
+[    2.157432] usbserial: USB Serial support registered for novatel_gps
+[    2.162503] usbserial: USB Serial support registered for hp4x
+[    2.166968] usbserial: USB Serial support registered for suunto
+[    2.171608] usbserial: USB Serial support registered for siemens_mpi
+[    2.178364] input: 30370000.snvs:snvs-powerkey as /devices/platform/soc@0/30000000.bus/30370000.snvs/30370000.snvs:snvs-powerkey/input/input0
+[    2.190223] i2c /dev entries driver
+[    2.193376] i.mx8mm_thermal 30260000.tmu: probing IMX8MM TMU
+[    2.197831] i.mx8mm_thermal 30260000.tmu: failed to find tmu calibration fuse cell: -517
+[    2.206312] device-mapper: ioctl: 4.43.0-ioctl (2020-10-01) initialised: dm-devel@redhat.com
+[    2.213660] device-mapper: multipath round-robin: version 1.2.0 loaded
+[    2.218899] device-mapper: multipath queue-length: version 0.2.0 loaded
+[    2.224316] Bluetooth: HCI UART driver ver 2.3
+[    2.227469] Bluetooth: HCI UART protocol H4 registered
+[    2.231311] Bluetooth: HCI UART protocol BCSP registered
+[    2.235344] Bluetooth: HCI UART protocol LL registered
+[    2.239187] Bluetooth: HCI UART protocol ATH3K registered
+[    2.243305] Bluetooth: HCI UART protocol Three-wire (H5) registered
+[    2.248364] Bluetooth: HCI UART protocol Broadcom registered
+[    2.252743] Bluetooth: HCI UART protocol QCA registered
+[    2.257652] sdhci: Secure Digital Host Controller Interface driver
+[    2.262542] sdhci: Copyright(c) Pierre Ossman
+[    2.265603] sdhci-pltfm: SDHCI platform and OF driver helper
+[    2.271745] ledtrig-cpu: registered to indicate activity on CPUs
+[    2.276844] SMCCC: SOC_ID: ARCH_SOC_ID not implemented, skipping ....
+[    2.282734] caam-snvs 30370000.caam-snvs: violation handlers armed - init state
+[    2.289335] usbcore: registered new interface driver usbhid
+[    2.293616] usbhid: USB HID core driver
+[    2.298283] debugfs: Directory '30390000.reset-controller-src' with parent 'regmap' already present!
+[    2.306195] shaper-mcu-rproc shaper-m4-rproc: failed to request mbox tx chan: -517
+[    2.312489] remoteproc remoteproc0: releasing shaper-m4-rproc
+[    2.317070] NET: Registered protocol family 26
+[    2.320622] NET: Registered protocol family 10
+[    2.325013] Segment Routing with IPv6
+[    2.327438] NET: Registered protocol family 17
+[    2.331546] Bluetooth: RFCOMM TTY layer initialized
+[    2.335140] Bluetooth: RFCOMM socket layer initialized
+[    2.338993] Bluetooth: RFCOMM ver 1.11
+[    2.341455] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[    2.345470] Bluetooth: BNEP filters: protocol multicast
+[    2.349430] Bluetooth: BNEP socket layer initialized
+[    2.353108] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+[    2.357736] Bluetooth: HIDP socket layer initialized
+[    2.362234] NET: Registered protocol family 41
+[    2.366073] Key type dns_resolver registered
+[    2.370063] registered taskstats version 1
+[    2.372875] Loading compiled-in X.509 certificates
+[    2.385094] Key type secure registered
+[    2.400323] imx8m-hwspinlock 303b0000.sema1: initializing
+[    2.405334] gpio-imx8mm 30200000.gpio: initializing gpio-controller
+[    2.410879] gpio-imx8mm 30200000.gpio: initializing interrupt controller
+[    2.416968] gpio-imx8mm 30200000.gpio: ready
+[    2.420100] gpio-imx8mm 30210000.gpio: initializing gpio-controller
+[    2.425146] gpio-39 (bt_dev_wake): hogged as output/high
+[    2.429626] gpio-imx8mm 30210000.gpio: initializing interrupt controller
+[    2.435699] gpio-imx8mm 30210000.gpio: ready
+[    2.438815] gpio-imx8mm 30220000.gpio: initializing gpio-controller
+[    2.444603] gpio-imx8mm 30220000.gpio: initializing interrupt controller
+[    2.450665] gpio-imx8mm 30220000.gpio: ready
+[    2.453790] gpio-imx8mm 30230000.gpio: initializing gpio-controller
+[    2.458800] gpio-imx8mm 30230000.gpio: using hardware spin lock: 3
+[    2.464500] gpio-imx8mm 30230000.gpio: ready
+[    2.467854] VSYS_5V0-USB1-VBUS: supplied by VSYS_5V0
+[    2.471892] VSYS_5V0-USB2_VBUS: supplied by VSYS_5V0
+[    2.493935] gpio-imx8mm 30200000.gpio: imx8mm_gpio_set_irq_type
+[    2.500112] nxp-pca9450 0-0025: pca9450a probed.
+[    2.506176] rtc-pcf8523 0-0068: registered as rtc0
+[    2.510834] rtc-pcf8523 0-0068: setting system clock to 2025-10-27T22:56:29 UTC (1761605789)
+[    2.518293] pca953x 0-0020: error -ENODEV: reg get err
+[    2.522139] pca953x 0-0020: using no AI
+[    2.526708] gpio-imx8mm 30220000.gpio: imx8mm_gpio_set_irq_type
+[    2.532024] i2c i2c-0: IMX I2C adapter registered
+[    2.536766] i2c i2c-1: IMX I2C adapter registered
+[    2.541602] i2c i2c-3: IMX I2C adapter registered
+[    2.547539] SoC: i.MX8MM revision 1.0
+[    2.550066] imx-cpufreq-dt imx-cpufreq-dt: cpu speed grade 3 mkt segment 0 supported-hw 0x8 0x1
+[    2.559773] imx-lcdif-crtc imx-lcdif-crtc.0: imx-lcdif-crtc path, original depth: 32
+[    2.566234] imx-lcdif-crtc imx-lcdif-crtc.0: imx-lcdif-crtc path, forced depth: 32
+[    2.574721] imx-drm 32c00000.bus:display-subsystem: bound imx-lcdif-crtc.0 (ops 0xffffffc0108fa9f0)
+[    2.582570] imx_sec_dsim_drv 32e10000.mipi_dsi: version number is 0x1060200
+[    2.588689] imx-drm 32c00000.bus:display-subsystem: bound 32e10000.mipi_dsi (ops 0xffffffc0108f88d8)
+[    2.596532] imx-drm 32c00000.bus:display-subsystem: Attempted FB colour depth: 32
+[    2.602718] imx-drm 32c00000.bus:display-subsystem: Final FB colour depth: 32
+[    2.608566] imx-drm 32c00000.bus:display-subsystem: Final FB colour depth after Shaper weighs in: 32
+[    2.617337] [drm] Initialized imx-drm 1.0.0 20120507 for 32c00000.bus:display-subsystem on minor 0
+[    2.704158] random: fast init done
+[    2.878163] Colour depth: 24
+[    2.910350] Console: switching to colour frame buffer device 160x45
+[    2.923699] imx-drm 32c00000.bus:display-subsystem: [drm] fb0: imx-drmdrmfb frame buffer device
+[    2.932189] i.mx8mm_thermal 30260000.tmu: probing IMX8MM TMU
+[    2.936643] i.mx8mm_thermal 30260000.tmu: found tmu calibration: 0x013c7a3d
+[    2.942308] i.mx8mm_thermal 30260000.tmu: wrote IMX8MM TMU calibration fuses to configuration registers
+[    2.950517] i.mx8mm_thermal 30260000.tmu: found 2 total trip points defined for IMX8MM TMU
+[    2.957483] i.mx8mm_thermal 30260000.tmu: IMX8MM TMU passive thermal trip point found: 90C
+[    2.964462] i.mx8mm_thermal 30260000.tmu: IMX8MM TMU critical thermal trip point found: 95C
+[    2.973250] sdhci-esdhc-imx 30b40000.mmc: allocated mmc-pwrseq
+[    2.973455] caam-dma caam-dma: Defer probing after JR driver probing
+[    2.973760] VDD_3V3-SD: supplied by PMIC_BUCK4-VDD_3V3
+[    2.986838] caam 30900000.crypto: device ID = 0x0a16040100000000 (Era 9)
+[    2.992267] caam 30900000.crypto: job rings = 3, qi = 0
+[    2.997368] caam_jr 30901000.jr: failed to flush job ring 0
+[    3.001726] caam_jr: probe of 30901000.jr failed with error -5
+[    3.006761] fsl-jr-uio 30901000.jr: UIO device full name fsl-jr0 initialized
+[    3.012766] mmc2: SDHCI controller on 30b60000.mmc [30b60000.mmc] using ADMA
+[    3.015846] caam algorithms registered in /proc/crypto
+[    3.023147] mmc0: SDHCI controller on 30b40000.mmc [30b40000.mmc] using ADMA
+[    3.023369] caam 30900000.crypto: caam pkc algorithms registered in /proc/crypto
+[    3.028949] mmc1: SDHCI controller on 30b50000.mmc [30b50000.mmc] using ADMA
+[    3.035136] caam 30900000.crypto: registering rng-caam
+[    3.045710] Device caam-keygen registered
+[    3.049530] debugfs: Directory '30390000.reset-controller-src' with parent 'regmap' already present!
+[    3.057601] shaper-mcu-rproc shaper-m4-rproc: mapped mem[0] da: 0x1ffe0000 sa: 0x007e0000 size: 131072
+[    3.065719] shaper-mcu-rproc shaper-m4-rproc: mapped mem[1] da: 0x1efe0000 sa: 0x4efe0000 size: 1048576
+[    3.073917] shaper-mcu-rproc shaper-m4-rproc: mapped mem[2] da: 0x20000000 sa: 0x00800000 size: 131072
+[    3.081997] shaper-mcu-rproc shaper-m4-rproc: mapped mem[3] da: 0x20180000 sa: 0x00180000 size: 32768
+[    3.083122] random: crng init done
+[    3.089964] shaper-mcu-rproc shaper-m4-rproc: mapped mem[4] da: 0x20200000 sa: 0x00900000 size: 131072
+[    3.100091] shaper-mcu-rproc shaper-m4-rproc: mapped mem[5] da: 0x20220000 sa: 0x00920000 size: 131072
+[    3.108178] shaper-mcu-rproc shaper-m4-rproc: mapped mem[6] da: 0x4f0e0000 sa: 0x4f0e0000 size: 2097152
+[    3.116350] shaper-mcu-rproc shaper-m4-rproc: mapped mem[7] memory-region: sa: 0xb8000000 size: 32768
+[    3.124337] shaper-mcu-rproc shaper-m4-rproc: mapped mem[8] memory-region: sa: 0xb8008000 size: 32768
+[    3.132339] shaper-mcu-rproc shaper-m4-rproc: mapped mem[9] memory-region: sa: 0xb8400000 size: 1048576
+[    3.140455] shaper-mcu-rproc shaper-m4-rproc: registered rproc memory vdev0vring0, 0x00000000b8000000@32768 0000000025688e28
+[    3.150396] shaper-mcu-rproc shaper-m4-rproc: registered rproc memory vdev0vring1, 0x00000000b8008000@32768 0000000025688e28
+[    3.160335] shaper-mcu-rproc shaper-m4-rproc: registered rproc memory vdev0buffer, 0x00000000b8400000@1048576 0000000025688e28
+[    3.170456] shaper-mcu-rproc shaper-m4-rproc: M4 is RUNNING with firmware mcu-firmware.elf
+[    3.177913] remoteproc remoteproc0: shaper-m4-rproc is available
+[    3.187771] ci_hdrc ci_hdrc.0: EHCI Host Controller
+[    3.191478] ci_hdrc ci_hdrc.0: new USB bus registered, assigned bus number 1
+[    3.202521] mmc0: queuing unknown CIS tuple 0x80 (2 bytes)
+[    3.208370] mmc0: queuing unknown CIS tuple 0x80 (3 bytes)
+[    3.210847] mmc2: new HS400 Enhanced strobe MMC card at address 0001
+[    3.211089] ci_hdrc ci_hdrc.0: USB 2.0 started, EHCI 1.00
+[    3.211233] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 5.10
+[    3.211238] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.211243] usb usb1: Product: EHCI Host Controller
+[    3.211247] usb usb1: Manufacturer: Linux 5.10.35-shaper ehci_hcd
+[    3.211250] usb usb1: SerialNumber: ci_hdrc.0
+[    3.211974] hub 1-0:1.0: USB hub found
+[    3.211998] hub 1-0:1.0: 1 port detected
+[    3.214226] mmc0: queuing unknown CIS tuple 0x80 (3 bytes)
+[    3.218386] mmcblk2: mmc2:0001 TB2916 14.6 GiB 
+[    3.224999] mmc0: queuing unknown CIS tuple 0x80 (7 bytes)
+[    3.228859] mmcblk2boot0: mmc2:0001 TB2916 partition 1 4.00 MiB
+[    3.230898] ci_hdrc ci_hdrc.1: EHCI Host Controller
+[    3.230911] ci_hdrc ci_hdrc.1: new USB bus registered, assigned bus number 2
+[    3.239049] mmc0: queuing unknown CIS tuple 0x80 (6 bytes)
+[    3.243104] ci_hdrc ci_hdrc.1: USB 2.0 started, EHCI 1.00
+[    3.243146] mmcblk2boot1: mmc2:0001 TB2916 partition 2 4.00 MiB
+[    3.243834] mmcblk2rpmb: mmc2:0001 TB2916 partition 3 4.00 MiB, chardev (240:0)
+[    3.295876] usb usb2: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 5.10
+[    3.302939] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    3.308904] usb usb2: Product: EHCI Host Controller
+[    3.312573] usb usb2: Manufacturer: Linux 5.10.35-shaper ehci_hcd
+[    3.317463] usb usb2: SerialNumber: ci_hdrc.1
+[    3.321227] hub 2-0:1.0: USB hub found
+[    3.323811] hub 2-0:1.0: 1 port detected
+[    3.327851] job ring device 0 allocation failed
+[    3.331268] caam-dma caam-dma: caam dma support with 1 job rings
+[    3.337863] Freeing unused kernel memory: 2432K
+[    3.339827]  mmcblk2: p1 p2 p3 p4 p5 p6 p7
+[    3.351465] Run /init as init process
+[    3.353829]   with arguments:
+[    3.353832]     /init
+[    3.353834]   with environment:
+[    3.353837]     HOME=/
+[    3.353839]     TERM=linux
+[    3.353842]     active_partition=2
+[    3.353844]     audit=0
+[    3.400218] mmc0: new ultra high speed SDR104 SDIO card at address 0001
+[    3.405457] post_init_setup
+[    3.407172] determine_device
+[    3.411464] running on aarch64 target
+[    3.414119] running on davis
+[    3.551128] usb 1-1: new high-speed USB device number 2 using ci_hdrc
+[    3.588368] boot 1 of bootlimit_not_set
+[    3.591017] config_hardware
+[    3.617723] cpu freq: 1800000
+[    3.619504] config_hardware_davis
+[    3.621696] prepare_encryption_keys
+[    3.626323] preparing key for use
+[    3.628472] read_blob
+[    3.629506] reading blobbier off emmc
+[    3.635115] reading blob off blobbier
+[    3.654947] pre_mount_initramfs_actions 
+[    3.657736] mount_filesystems
+[    3.659481] mounting gpt partitions
+[    3.661752] mount_gpt_partition root2
+[    3.664216] open_encrypted_ext4_volume root2
+[    3.667256] open_encrypted_volume root2
+[    3.716097] usb 1-1: New USB device found, idVendor=0451, idProduct=8027, bcdDevice= 1.10
+[    3.723022] usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=1
+[    3.728889] usb 1-1: SerialNumber: 0E0600796524
+[    3.732662] hub 1-1:1.0: USB hub found
+[    3.735215] hub 1-1:1.0: 2 ports detected
+[    3.801891] decrypt_gpt_volume root2 on /dev/mmcblk2p4
+[    3.819178] root2 decrypted
+[    3.905807] mount_ext4 root2
+[    3.909530] fsck /dev/mapper/root2
+[    3.950011] mounting /dev/mapper/root2 on /shaper/rootmount with ro
+[    3.968872] EXT4-fs (dm-0): mounted filesystem with ordered data mode. Opts: (null)
+[    3.975907] Filesystem check: 1. no recovery needed
+[    3.980066] mount_gpt_partition userdata
+[    3.980134] mount_gpt_partition var
+[    3.980220] mount_gpt_partition cal
+[    3.980336] open_encrypted_ext4_volume cal
+[    3.980407] open_encrypted_volume cal
+[    3.982904] open_encrypted_ext4_volume userdata
+[    3.985057] open_encrypted_ext4_volume var
+[    3.987295] open_encrypted_volume userdata
+[    3.990066] open_encrypted_volume var
+[    4.193463] decrypt_gpt_volume cal on /dev/mmcblk2p7
+[    4.193464] decrypt_gpt_volume var on /dev/mmcblk2p5
+[    4.193774] decrypt_gpt_volume userdata on /dev/mmcblk2p6
+[    4.206346] var decrypted
+[    4.210443] cal decrypted
+[    4.221384] userdata decrypted
+[    4.237188] mount_ext4 cal
+[    4.249358] fsck /dev/mapper/cal
+[    4.279703] mounting /dev/mapper/cal on /shaper/rootmount/cal with ro
+[    4.287203] usb 1-1.2: new high-speed USB device number 3 using ci_hdrc
+[    4.299890] EXT4-fs (dm-2): mounted filesystem with ordered data mode. Opts: (null)
+[    4.307208] Filesystem check: 1. no recovery needed
+[    4.326433] mount_ext4 userdata
+[    4.329328] mount_ext4 var
+[    4.331500] fsck /dev/mapper/userdata
+[    4.333966] fsck /dev/mapper/var
+[    4.400759] usb 1-1.2: New USB device found, idVendor=0bda, idProduct=8153, bcdDevice=30.00
+[    4.407854] usb 1-1.2: New USB device strings: Mfr=1, Product=2, SerialNumber=6
+[    4.413896] usb 1-1.2: Product: USB 10/100/1000 LAN
+[    4.417502] usb 1-1.2: Manufacturer: Realtek
+[    4.420497] usb 1-1.2: SerialNumber: 000001
+[    4.511131] usb 1-1.2: reset high-speed USB device number 3 using ci_hdrc
+[    4.636281] r8152 1-1.2:1.0: skip request firmware
+[    4.672699] r8152 1-1.2:1.0 eth0: v1.11.11
+[    4.786372] fsck failed; reattempting fsck
+[    4.963121] usb 1-1.1: new high-speed USB device number 4 using ci_hdrc
+[    5.080243] usb 1-1.1: New USB device found, idVendor=090c, idProduct=1000, bcdDevice=11.00
+[    5.087331] usb 1-1.1: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+[    5.093366] usb 1-1.1: Product: Flash Disk
+[    5.096196] usb 1-1.1: Manufacturer: USB
+[    5.100051] usb-storage 1-1.1:1.0: USB Mass Storage device detected
+[    5.105394] usb-storage 1-1.1:1.0: Quirks match for vid 090c pid 1000: 400
+[    5.111406] scsi host0: usb-storage 1-1.1:1.0
+[    5.187286] rebuild_var_if_var
+[    5.190897] avoiding mounting problematic filesystem
+[    5.201272] mount_tmpfs /shaper/rootmount/mnt/appdata
+[    5.210339] Filesystem check: 5. unrecoverable but mountable
+[    5.475790] mounting /dev/mapper/var on /shaper/rootmount/var with noatime
+[    5.518298] EXT4-fs (dm-1): mounted filesystem with ordered data mode. Opts: (null)
+[    5.525321] Filesystem check: 1. no recovery needed
+[    5.529651] mount_tmpfs /shaper/rootmount/run
+[    5.537842] post_mount_actions 
+[    5.539797] no initramfs actions requested
+[    5.569344] stashing shaper state
+[    5.574062] starting axe
+[    6.207532] scsi 0:0:0:0: Direct-Access     USB      Flash Disk       1100 PQ: 0 ANSI: 6
+[    6.217528] sd 0:0:0:0: [sda] 61736960 512-byte logical blocks: (31.6 GB/29.4 GiB)
+[    6.225572] sd 0:0:0:0: [sda] Write Protect is off
+[    6.229076] sd 0:0:0:0: [sda] Mode Sense: 43 00 00 00
+[    6.230265] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[    6.248386]  sda: sda1
+[    6.251983] sd 0:0:0:0: [sda] Attached SCSI removable disk
+[    6.667170] systemd[1]: systemd 256.5 running in system mode (+PAM -AUDIT -SELINUX -APPARMOR -IMA -SMACK -SECCOMP -GCRYPT -GNUTLS -OPENSSL -ACL +BLKID -CURL -ELFUTILS -FIDO2 -IDN2 -IDN -IPTC +KMOD -LIBCRYPTSETUP -LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 -PWQUALITY -P11KIT -QRENCODE -TPM2 -BZIP2 -LZ4 -XZ -ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON -UTMP -SYSVINIT -LIBARCHIVE)
+[    6.698412] systemd[1]: Detected architecture arm64.
+[    6.729586] systemd[1]: Hostname set to <SO2-NNP7CB9-7-0-0-3>.
+[    6.771703] systemd[1]: watchdog boot status: 0
+[    6.774942] systemd[1]: watchdog boot status: 0x00000000
+[    6.779028] systemd[1]: Using hardware watchdog 'imx2+ watchdog', version 0, device /dev/watchdog0
+[    6.786703] systemd[1]: Watchdog running with a hardware timeout of 10s.
+[    7.328860] systemd[1]: Queued start job for default target Multi-User System.
+[    7.342598] systemd[1]: Unnecessary job was removed for /dev/mapper/var.
+[    7.350778] systemd[1]: Created slice Slice /system/modprobe.
+[    7.372473] systemd[1]: Created slice Slice /system/serial-getty.
+[    7.396490] systemd[1]: Created slice User and Session Slice.
+[    7.419834] systemd[1]: Started Dispatch Password Requests to Console Directory Watch.
+[    7.443697] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[    7.467653] systemd[1]: Reached target Path Units.
+[    7.483571] systemd[1]: Reached target Remote File Systems.
+[    7.503168] systemd[1]: Reached target Slice Units.
+[    7.519545] systemd[1]: Reached target Swaps.
+[    7.535967] systemd[1]: Listening on Syslog Socket.
+[    7.562011] systemd[1]: Listening on Process Core Dump Socket.
+[    7.587690] systemd[1]: Listening on Credential Encryption/Decryption.
+[    7.616460] systemd[1]: Journal Audit Socket was skipped because of an unmet condition check (ConditionSecurity=audit).
+[    7.626391] systemd[1]: Listening on Journal Socket (/dev/log).
+[    7.647875] systemd[1]: Listening on Journal Sockets.
+[    7.657828] systemd[1]: Listening on DDI File System Mounter Socket.
+[    7.679616] systemd[1]: Listening on Network Service Netlink Socket.
+[    7.703805] systemd[1]: Listening on Namespace Resource Manager Socket.
+[    7.727870] systemd[1]: Listening on udev Control Socket.
+[    7.747469] systemd[1]: Listening on udev Kernel Socket.
+[    7.758716] systemd[1]: Huge Pages File System was skipped because of an unmet condition check (ConditionPathExists=/sys/kernel/mm/hugepages).
+[    7.779005] systemd[1]: Mounting POSIX Message Queue File System...
+[    7.802000] systemd[1]: Mounting Kernel Debug File System...
+[    7.821645] systemd[1]: Mounting Kernel Trace File System...
+[    7.843001] systemd[1]: Mounting Temporary Directory /tmp...
+[    7.859433] systemd[1]: Create List of Static Device Nodes was skipped because of an unmet condition check (ConditionFileNotEmpty=/lib/modules/5.10.35-shaper/modules.devname).
+[    7.876866] systemd[1]: Starting Load Kernel Module configfs...
+[    7.898288] systemd[1]: Starting Load Kernel Module drm...
+[    7.922053] systemd[1]: Starting Load Kernel Module fuse...
+[    7.945066] systemd[1]: Starting Load Kernel Modules...
+[    7.966483] systemd[1]: Starting Generate network units from Kernel command line...
+[    7.988683] cryptodev: loading out-of-tree module taints kernel.
+[    7.994586] cryptodev: driver 1.14 loaded.
+[    8.006428] systemd[1]: Starting Remount Root and Kernel File Systems...
+[    8.030066] systemd[1]: Starting Create Static Device Nodes in /dev gracefully...
+[    8.058218] systemd[1]: Starting Load udev Rules from Credentials...
+[    8.086378] systemd[1]: Starting Coldplug All udev Devices...
+[    8.110584] systemd[1]: Mounted POSIX Message Queue File System.
+[    8.125838] module built by  at Thu Oct 23 00:30:46 UTC 2025
+[    8.126462] galcore: clk_get vg clock failed, disable vg!
+[    8.135286] galcore 38000000.gpu: IRQ irq_vg not found
+[    8.135749] systemd[1]: Mounted Kernel Debug File System.
+[    8.139434] Galcore version 6.4.11.p3.1049711
+[    8.164073] systemd[1]: Mounted Kernel Trace File System.
+[    8.184722] systemd[1]: Mounted Temporary Directory /tmp.
+[    8.198994] [drm] Initialized vivante 1.0.0 20170808 for 38000000.gpu on minor 1
+[    8.211759] shaper-mcu-log driver loaded
+[    8.216504] systemd[1]: modprobe@configfs.service: Deactivated successfully.
+[    8.222730] shaper-mcu-spaces shaper-m4-spaces: shaper_mcu_space_probe invoked
+[    8.222982] systemd[1]: Finished Load Kernel Module configfs.
+[    8.228844] remoteproc remoteproc0: attaching to shaper-m4-rproc
+[    8.256196] systemd[1]: modprobe@drm.service: Deactivated successfully.
+[    8.262197] systemd[1]: Finished Load Kernel Module drm.
+[    8.271335]  remoteproc0#vdev0buffer: vdev 0 buffer already mapped
+[    8.277283] virtio_rpmsg_bus virtio0: rpmsg host is online
+[    8.277542] virtio_rpmsg_bus virtio0: creating channel shaper-rpmsg-mcu-log addr 0x1e
+[    8.281556]  remoteproc0#vdev0buffer: registered virtio0 (type 7)
+[    8.281562] remoteproc remoteproc0: remote processor shaper-m4-rproc is now attached
+[    8.281572] shaper-mcu-spaces shaper-m4-spaces: ready using dev numbers 0.0-63, daddr: 0xb8500000@262144, vaddr: 000000009bf80a04
+[    8.310791] shaper_mcu_log virtio0.shaper-rpmsg-mcu-log.-1.30: mcu log rpmsg created with endpoint: 0x1e
+[    8.319257] virtio_rpmsg_bus virtio0: creating channel shaper-rpmsg-mcu-capture addr 0x1f
+[    8.324557] systemd[1]: modprobe@fuse.service: Deactivated successfully.
+[    8.326270] virtio_rpmsg_bus virtio0: msg received with no recipient
+[    8.332224] systemd[1]: Finished Load Kernel Module fuse.
+[    8.356534] systemd[1]: Finished Load Kernel Modules.
+[    8.376682] systemd[1]: Finished Generate network units from Kernel command line.
+[    8.400736] systemd[1]: Finished Remount Root and Kernel File Systems.
+[    8.424821] systemd[1]: Finished Create Static Device Nodes in /dev gracefully.
+[    8.448197] systemd[1]: Finished Load udev Rules from Credentials.
+[    8.472987] systemd[1]: Reached target Preparation for Network.
+[    8.496380] systemd[1]: FUSE Control File System was skipped because of an unmet condition check (ConditionPathExists=/sys/fs/fuse/connections).
+[    8.510956] systemd[1]: Mounting Kernel Configuration File System...
+[    8.536455] systemd[1]: Rebuild Hardware Database was skipped because of an unmet condition check (ConditionNeedsUpdate=/etc).
+[    8.549834] systemd[1]: Starting Apply Kernel Variables...
+[    8.569807] systemd[1]: Starting Create Static Device Nodes in /dev...
+[    8.594795] systemd[1]: Finished Coldplug All udev Devices.
+[    8.617969] systemd[1]: Mounted Kernel Configuration File System.
+[    8.640037] systemd[1]: Finished Apply Kernel Variables.
+[    8.660058] systemd[1]: Finished Create Static Device Nodes in /dev.
+[    8.684144] systemd[1]: Reached target Preparation for Local File Systems.
+[    8.707650] systemd[1]: Reached target Local File Systems.
+[    8.729915] systemd[1]: Starting Prepare the filesystem...
+[    8.747362] systemd[1]: Save Transient machine-id to Disk was skipped because of an unmet condition check (ConditionPathIsMountPoint=/etc/machine-id).
+[    8.760226] systemd[1]: systemd-udevd.service: unit configures an IP firewall, but the local system does not support BPF/cgroup firewalling.
+[    8.771607] systemd[1]: systemd-udevd.service: (This warning is only shown for the first unit using IP firewalling.)
+[    8.782951] systemd[1]: Starting Rule-based Manager for Device Events and Files...
+[    8.926324] systemd[1]: Started Rule-based Manager for Device Events and Files.
+[    8.980174] systemd[1]: Journal Audit Socket was skipped because of an unmet condition check (ConditionSecurity=audit).
+[    8.997214] systemd[1]: Huge Pages File System was skipped because of an unmet condition check (ConditionPathExists=/sys/kernel/mm/hugepages).
+[    9.022321] systemd[1]: Create List of Static Device Nodes was skipped because of an unmet condition check (ConditionFileNotEmpty=/lib/modules/5.10.35-shaper/modules.devname).
+[    9.046171] systemd[1]: Starting Load Kernel Module fuse...
+[    9.063672] systemd[1]: Rebuild Hardware Database was skipped because of an unmet condition check (ConditionNeedsUpdate=/etc).
+[    9.084361] systemd[1]: Save Transient machine-id to Disk was skipped because of an unmet condition check (ConditionPathIsMountPoint=/etc/machine-id).
+[    9.133720] systemd[1]: Starting Network Configuration...
+[    9.156919] systemd[1]: modprobe@fuse.service: Deactivated successfully.
+[    9.192560] systemd[1]: Finished Load Kernel Module fuse.
+[    9.275524] systemd[1]: FUSE Control File System was skipped because of an unmet condition check (ConditionPathExists=/sys/fs/fuse/connections).
+[    9.695262] systemd[1]: Journal Audit Socket was skipped because of an unmet condition check (ConditionSecurity=audit).
+[    9.715362] systemd[1]: Huge Pages File System was skipped because of an unmet condition check (ConditionPathExists=/sys/kernel/mm/hugepages).
+[    9.759430] systemd[1]: Create List of Static Device Nodes was skipped because of an unmet condition check (ConditionFileNotEmpty=/lib/modules/5.10.35-shaper/modules.devname).
+[    9.793285] systemd[1]: Starting Load Kernel Module fuse...
+[    9.818755] systemd[1]: Rebuild Hardware Database was skipped because of an unmet condition check (ConditionNeedsUpdate=/etc).
+[    9.839417] systemd[1]: Save Transient machine-id to Disk was skipped because of an unmet condition check (ConditionPathIsMountPoint=/etc/machine-id).
+[    9.861373] imx-sdma 302b0000.dma-controller: firmware found.
+[    9.861375] imx-sdma 302c0000.dma-controller: firmware found.
+[    9.861494] imx-sdma 302c0000.dma-controller: loaded firmware 4.5
+[    9.865886] imx-sdma 30bd0000.dma-controller: firmware found.
+[    9.879898] sis_i2c_95xx_ts 1-005c: i2c-1-005c
+[    9.900674] mxc_mipi-csi 32e30000.mipi_csi: supply mipi-phy not found, using dummy regulator
+[    9.910610] mxc_mipi-csi 32e30000.mipi_csi: mipi csi v4l2 device registered
+[    9.917088] mxc_mipi-csi 32e30000.mipi_csi: lanes: 2, hs_settle: 13, clk_settle: 2, wclk: 1, freq: 333000000
+[    9.936842] VDD_2V8_CAM: supplied by PMIC_BUCK4-VDD_3V3
+[    9.939243] systemd[1]: modprobe@fuse.service: Deactivated successfully.
+[    9.941582] VDD_1V2_CAM: supplied by PMIC_BUCK4-VDD_3V3
+[    9.953617] ov9281 3-0060: Detected OV009281 sensor
+[    9.960639] systemd[1]: Finished Load Kernel Module fuse.
+[    9.961530] mxc_mipi-csi 32e30000.mipi_csi: Registered sensor subdevice: mov9281 3-0060
+[   10.018675] mx6s-csi 32e20000.csi1_bridge: initialising
+[   10.023130] CSI: Registered sensor subdevice: mxc_mipi-csi.0
+[   10.136905] systemd[1]: Finished Prepare the filesystem.
+[   10.140995] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[   10.158635] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[   10.258900] systemd[1]: Reached target Hardware activated USB gadget.
+[   10.279601] systemd[1]: Journal Audit Socket was skipped because of an unmet condition check (ConditionSecurity=audit).
+[   10.289726] systemd[1]: Huge Pages File System was skipped because of an unmet condition check (ConditionPathExists=/sys/kernel/mm/hugepages).
+[   10.301448] systemd[1]: Create List of Static Device Nodes was skipped because of an unmet condition check (ConditionFileNotEmpty=/lib/modules/5.10.35-shaper/modules.devname).
+[   10.318592] mmc0: queuing unknown CIS tuple 0x80 (2 bytes)
+[   10.318741] systemd[1]: Starting Load Kernel Module fuse...
+[   10.322924] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   10.332731] systemd[1]: Rebuild Hardware Database was skipped because of an unmet condition check (ConditionNeedsUpdate=/etc).
+[   10.332736] r8152 1-1.2:1.0 eth0: carrier on
+[   10.333181] mmc0: queuing unknown CIS tuple 0x80 (3 bytes)
+[   10.348085] systemd[1]: Starting Journal Service...
+[   10.352466] mmc0: queuing unknown CIS tuple 0x80 (3 bytes)
+[   10.366159] mmc0: queuing unknown CIS tuple 0x80 (7 bytes)
+[   10.373511] mmc0: queuing unknown CIS tuple 0x80 (6 bytes)
+[   10.395501] systemd[1]: Save Transient machine-id to Disk was skipped because of an unmet condition check (ConditionPathIsMountPoint=/etc/machine-id).
+[   10.412746] systemd[1]: Started Network Configuration.
+[   10.420623] systemd-journald[724]: Collecting audit messages is disabled.
+[   10.440318] systemd[1]: modprobe@fuse.service: Deactivated successfully.
+[   10.446569] systemd[1]: Finished Load Kernel Module fuse.
+[   10.471299] systemd[1]: FUSE Control File System was skipped because of an unmet condition check (ConditionPathExists=/sys/fs/fuse/connections).
+[   10.483496] brcmfmac: using the intree module
+[   10.483618] brcmfmac: F1 signature read @0x18000000=0x15264345
+[   10.489761] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
+[   10.501267] systemd[1]: Starting Enable Persistent Storage in systemd-networkd...
+[   10.528717] systemd[1]: Starting Wait for Network to be Configured...
+[   10.567971] systemd[1]: Started Journal Service.
+[   10.699481] systemd-journald[724]: Received client request to flush runtime journal.
+[   10.708725] systemd-journald[724]: File /var/log/journal/426224963b1c41d39484eee7508586dd/system.journal corrupted or uncleanly shut down, renaming and replacing.
+[   10.757058] gpio-imx8mm 30210000.gpio: imx8mm_gpio_set_irq_type
+[   10.763423] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
+[   10.775112] brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4345/6 wl0: Aug 29 2023 01:47:08 version 7.45.265 (28bca26 CY) FWID 01-b677b91b
+[   11.425057] EXT4-fs (dm-0): re-mounted. Opts: (null)
+[   11.454442] EXT4-fs (dm-0): re-mounted. Opts: (null)
+[   12.159537] input: SiS Touch as /devices/platform/soc@0/30800000.bus/30a30000.i2c/i2c-1/1-005c/input/input1
+[   12.168877] gpio-imx8mm 30200000.gpio: imx8mm_gpio_set_irq_type
+[   12.806797] shaper_mcu_log mcu!log: opened mcu log with file 000000002459c1f2
+[   13.219140] EXT4-fs (dm-0): re-mounted. Opts: (null)
+[   13.394378] Bluetooth: HCI LE Autoconnection Time set to 20000 milliseconds by Shaper
+[   15.653155] gcmkONERROR: status=-1(gcvSTATUS_INVALID_ARGUMENT) @ gckOS_UnmapMemoryEx(1269)
+[   16.059826] ieee80211 phy0: brcmf_p2p_send_action_frame: Unknown Frame: category 0x5, action 0x4
+[   16.067520] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+[   33.763121] VDD_3V3-SD: disabling

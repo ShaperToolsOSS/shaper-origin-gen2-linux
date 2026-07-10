@@ -1,0 +1,18 @@
+echo "Running shaper netboot boot script"
+
+setenv extra_args "${shaper_boot_args} ${shaper_boot_args_passthrough}"
+
+setenv rootfs "/dev/nfs ip=dhcp nfsroot=/nfs/nfsroot,v3,tcp"
+setenv bootargs "console=${console} root=${rootfs} ${extra_args} pd_ignore_unused clk-imx8mm.mcore_booted=1"
+
+echo "Extracting image from fit"
+
+imxtract ${fitaddr} mcu-firmware ${m4addr}
+imxtract ${fitaddr} kernel ${loadaddr}
+imxtract ${fitaddr} fdt ${fdtaddr}
+
+echo "Booting MCU"
+bootaux ${m4addr}
+
+echo "Booting Kernel with ${bootargs}"
+booti ${loadaddr} - ${fdtaddr}

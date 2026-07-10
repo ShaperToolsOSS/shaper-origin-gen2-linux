@@ -625,6 +625,14 @@ static void __init psci_0_2_set_functions(void)
 		.migrate_info_type = psci_migrate_info_type,
 	};
 
+	/*
+	 * Davis uses WDOG1 (fsl,ext-reset-output) for reliable board reset.
+	 * Keep PSCI below watchdog restart handlers so PSCI doesn't block the
+	 * fallback path when firmware SYSTEM_RESET hangs.
+	 */
+	if (of_machine_is_compatible("shaper,imx8mm-som"))
+		psci_sys_reset_nb.priority = 64;
+
 	register_restart_handler(&psci_sys_reset_nb);
 
 	pm_power_off = psci_sys_poweroff;

@@ -5720,7 +5720,7 @@ static int r8153_post_firmware_2(struct r8152 *tp)
 	return 0;
 }
 
-static int r8153_post_firmware_3(struct r8152 *tp)
+static __attribute__((unused)) int r8153_post_firmware_3(struct r8152 *tp)
 {
 	u32 ocp_data;
 
@@ -9643,10 +9643,12 @@ static int rtl_fw_init(struct r8152 *tp)
 		rtl_fw->pre_fw		= r8153_pre_firmware_2;
 		rtl_fw->post_fw		= r8153_post_firmware_2;
 		break;
+/*
 	case RTL_VER_06:
 		rtl_fw->fw_name		= FIRMWARE_8153A_4;
 		rtl_fw->post_fw		= r8153_post_firmware_3;
 		break;
+*/
 	case RTL_VER_09:
 		rtl_fw->fw_name		= FIRMWARE_8153B_2;
 		rtl_fw->pre_fw		= r8153b_pre_firmware_1;

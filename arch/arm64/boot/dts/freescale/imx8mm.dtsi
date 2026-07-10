@@ -493,7 +493,7 @@
 			};
 
 			gpio1: gpio@30200000 {
-				compatible = "fsl,imx8mm-gpio", "fsl,imx35-gpio";
+				compatible = "fsl,imx8mm-gpio";
 				reg = <0x30200000 0x10000>;
 				interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>,
 					     <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>;
@@ -506,7 +506,7 @@
 			};
 
 			gpio2: gpio@30210000 {
-				compatible = "fsl,imx8mm-gpio", "fsl,imx35-gpio";
+				compatible = "fsl,imx8mm-gpio";
 				reg = <0x30210000 0x10000>;
 				interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>,
 					     <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
@@ -519,7 +519,7 @@
 			};
 
 			gpio3: gpio@30220000 {
-				compatible = "fsl,imx8mm-gpio", "fsl,imx35-gpio";
+				compatible = "fsl,imx8mm-gpio";
 				reg = <0x30220000 0x10000>;
 				interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>,
 					     <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>;
@@ -532,7 +532,7 @@
 			};
 
 			gpio4: gpio@30230000 {
-				compatible = "fsl,imx8mm-gpio", "fsl,imx35-gpio";
+				compatible = "fsl,imx8mm-gpio";
 				reg = <0x30230000 0x10000>;
 				interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>,
 					     <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
@@ -545,7 +545,7 @@
 			};
 
 			gpio5: gpio@30240000 {
-				compatible = "fsl,imx8mm-gpio", "fsl,imx35-gpio";
+				compatible = "fsl,imx8mm-gpio";
 				reg = <0x30240000 0x10000>;
 				interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
 					     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
@@ -747,6 +747,24 @@
 				reg = <0x30390000 0x10000>;
 				interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
 				#reset-cells = <1>;
+			};
+
+			sema1: sema1@303b0000 {
+				compatible = "fsl,imx8m-hwspinlock";
+				#hwlock-cells = <1>;
+				reg = <0x303b0000 0x42>;
+				clocks = <&clk IMX8MM_CLK_SEMA1_ROOT>;
+				base = <0>;
+				status = "disable";
+			};
+
+			sema2: sema2@303c0000 {
+				compatible = "fsl,imx8m-hwspinlock";
+				#hwlock-cells = <1>;
+				reg = <0x303c0000 0x42>;
+				clocks = <&clk IMX8MM_CLK_SEMA2_ROOT>;
+				base = <64>;
+				status = "disable";
 			};
 
 			gpc: gpc@303a0000 {

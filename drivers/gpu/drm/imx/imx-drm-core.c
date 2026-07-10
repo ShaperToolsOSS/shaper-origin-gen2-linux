@@ -153,8 +153,12 @@ static int compare_of(struct device *dev, void *data)
 		 * default format of the connectors attached to
 		 * lcdif is usually RGB888
 		 */
-		if (pdata->of_node == np)
+		if (pdata->of_node == np) {
+			dev_info(dev, "imx-lcdif-crtc path, original depth: %d", legacyfb_depth);
 			legacyfb_depth = 32;
+			dev_info(dev, "imx-lcdif-crtc path, forced depth: %d", legacyfb_depth);
+		}
+
 #endif
 
 		return pdata->of_node == np;
@@ -322,6 +326,8 @@ static int imx_drm_bind(struct device *dev)
 
 	drm_mode_config_reset(drm);
 
+	dev_info(dev, "Attempted FB colour depth: %d\n", legacyfb_depth);
+
 	/*
 	 * All components are now initialised, so setup the fb helper.
 	 * The fb helper takes copies of key hardware information, so the
@@ -331,6 +337,10 @@ static int imx_drm_bind(struct device *dev)
 		dev_warn(dev, "Invalid legacyfb_depth.  Defaulting to 16bpp\n");
 		legacyfb_depth = 16;
 	}
+
+	dev_info(dev, "Final FB colour depth: %d\n", legacyfb_depth);
+	legacyfb_depth = 32;
+	dev_info(dev, "Final FB colour depth after Shaper weighs in: %d\n", legacyfb_depth);
 
 	drm_kms_helper_poll_init(drm);
 

@@ -504,6 +504,13 @@ config GPIO_MXC
 	select GPIO_GENERIC
 	select GENERIC_IRQ_CHIP
 
+config GPIO_IMX8MM_SHARED
+        tristate "NXP IMX8MM Shared GPIO Support"
+        default y
+        depends on ARCH_MXC
+        select GPIO_GENERIC
+        select GENERIC_IRQ_CHIP
+
 config GPIO_MXS
 	bool "Freescale MXS GPIO support" if COMPILE_TEST
 	depends on ARCH_MXS || COMPILE_TEST

@@ -1,0 +1,54 @@
+/dts-v1/;
+
+/ {
+	description = "Boot FitImage";
+	#address-cells = <1>;
+
+	images {
+		boot-script {
+			description = "Boot image script";
+			data = /incbin/("net-boot-legacy.ubs");
+			type = "script";
+			compression = "none";
+			hash@1 {
+				algo = "md5";
+			};
+		};
+		kernel {
+			description = "Linux kernel";
+			data = /incbin/("linux.bin");
+			type = "kernel";
+			arch = "arm64";
+			os = "linux";
+			compression = "none";
+			load = <0x40480000>;
+			entry = <0x40480000>;
+			hash@1 {
+				algo = "md5";
+			};
+		};
+		fdt {
+			description = "Flattened Device Tree blob";
+			data = /incbin/("linux.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x43000000>;
+			hash@1 {
+				algo = "md5";
+			};
+		};
+	};
+
+	configurations {
+		default = "boot-conf";
+		boot-conf {
+			description = "Boot Linux kernel with FDT blob";
+			kernel = "kernel";
+			fdt = "fdt";
+			hash@1 {
+				algo = "md5";
+			};
+		};
+	};
+};

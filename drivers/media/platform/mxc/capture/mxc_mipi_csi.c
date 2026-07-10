@@ -321,6 +321,18 @@ static const struct csis_pix_format mipi_csis_formats[] = {
 		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
 		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW8,
 		.data_alignment = 8,
+	}, {
+		.code = MEDIA_BUS_FMT_SBGGR10_1X10,
+		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW10,
+		.data_alignment = 10,
+	}, {
+		.code = MEDIA_BUS_FMT_Y8_1X8,
+		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW8,
+		.data_alignment = 8,
+	}, {
+		.code = MEDIA_BUS_FMT_Y10_1X10,
+		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW10,
+		.data_alignment = 10,
 	}
 };
 
@@ -835,9 +847,25 @@ static int mipi_csis_log_status(struct v4l2_subdev *mipi_sd)
 	return 0;
 }
 
+static int mipi_csis_g_register(struct v4l2_subdev *mipi_sd, struct v4l2_dbg_register *dbg)
+{
+        struct csi_state *state = mipi_sd_to_csi_state(mipi_sd);
+
+        return v4l2_subdev_call(state->sensor_sd, core, g_register, dbg);
+}
+
+static int mipi_csis_s_register(struct v4l2_subdev *mipi_sd, const struct v4l2_dbg_register *dbg)
+{
+        struct csi_state *state = mipi_sd_to_csi_state(mipi_sd);
+
+        return v4l2_subdev_call(state->sensor_sd, core, s_register, dbg);
+}
+
 static struct v4l2_subdev_core_ops mipi_csis_core_ops = {
 	.s_power = mipi_csis_s_power,
 	.log_status = mipi_csis_log_status,
+        .g_register = mipi_csis_g_register,
+        .s_register = mipi_csis_s_register,
 };
 
 static struct v4l2_subdev_video_ops mipi_csis_video_ops = {

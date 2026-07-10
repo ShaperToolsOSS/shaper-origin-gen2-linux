@@ -63,4 +63,15 @@ config HSEM_U8500
 
 	  If unsure, say N.
 
+config HWSPINLOCK_IMX8M_RDC
+	tristate "IMX8M RDC peripheral spinlock functionality"
+	depends on HWSPINLOCK
+	depends on ARCH_MXC
+	help
+	  Say y here to support the STE Hardware Semaphore functionality, which
+	  provides a synchronisation mechanism for the various processor on the
+	  SoC.
+
+	  If unsure, say N.
+
 endif # HWSPINLOCK

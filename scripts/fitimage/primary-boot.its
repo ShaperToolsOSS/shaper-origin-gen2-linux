@@ -1,0 +1,19 @@
+/dts-v1/;
+
+/ {
+	description = "Boot scripts";
+	#address-cells = <1>;
+
+	images {
+		boot-script {
+		    description = "Primary boot stage";
+		    data = /incbin/("primary-boot.ubs");
+		    type = "script";
+		    compression = "none";
+   			hash@1 {
+				algo = "sha256";
+			};
+		};
+	};
+
+};

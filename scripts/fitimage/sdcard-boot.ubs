@@ -1,0 +1,13 @@
+echo "Running shaper sdcard boot script"
+
+setenv extra_args "${shaper_boot_args} ${shaper_boot_args_passthrough}"
+setenv rootfs "PARTLABEL=davis-util-root rootwait rw"
+setenv bootargs "root=${rootfs} ${extra_args}"
+
+echo "Extracting image from fit"
+
+imxtract ${fitaddr} kernel ${loadaddr}
+imxtract ${fitaddr} fdt ${fdtaddr}
+
+echo "Booting Kernel with ${bootargs}"
+booti ${loadaddr} - ${fdtaddr}

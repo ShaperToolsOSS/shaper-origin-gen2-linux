@@ -44,6 +44,8 @@ static const struct brcmf_feat_fwcap brcmf_fwcap_map[] = {
 	{ BRCMF_FEAT_DOT11H, "802.11h" },
 	{ BRCMF_FEAT_SAE, "sae" },
 	{ BRCMF_FEAT_FWAUTH, "idauth" },
+	{ BRCMF_FEAT_SAE_EXT, "sae_ext" },
+	{ BRCMF_FEAT_SAE_EXT, "extsae" },
 };
 
 #ifdef DEBUG
@@ -152,6 +154,8 @@ static void brcmf_feat_wlc_version_overrides(struct brcmf_pub *drv)
 
 	major = le16_to_cpu(ver.wlc_ver_major);
 	minor = le16_to_cpu(ver.wlc_ver_minor);
+	drv->wlc_ver.major = major;
+	drv->wlc_ver.minor = minor;
 
 	brcmf_dbg(INFO, "WLC version: %d.%d\n", major, minor);
 
@@ -240,7 +244,14 @@ static void brcmf_feat_firmware_capabilities(struct brcmf_if *ifp)
 	brcmf_dbg(INFO, "[ %s]\n", caps);
 
 	for (i = 0; i < ARRAY_SIZE(brcmf_fwcap_map); i++) {
-		if (strnstr(caps, brcmf_fwcap_map[i].fwcap_id, sizeof(caps))) {
+		const char *match = strnstr(caps, brcmf_fwcap_map[i].fwcap_id, sizeof(caps));
+		if (match) {
+			char endc;
+			if (match != caps && match[-1] != ' ')
+				continue;
+			endc = match[strlen(brcmf_fwcap_map[i].fwcap_id)];
+			if (endc != '\0' && endc != ' ')
+				continue;
 			id = brcmf_fwcap_map[i].feature;
 			brcmf_dbg(INFO, "enabling feature: %s\n",
 				  brcmf_feat_names[id]);
@@ -339,6 +350,15 @@ void brcmf_feat_attach(struct brcmf_pub *drvr)
 
 	brcmf_feat_iovar_int_get(ifp, BRCMF_FEAT_FWSUP, "sup_wpa");
 	brcmf_feat_iovar_int_get(ifp, BRCMF_FEAT_SCAN_V2, "scan_ver");
+
+	switch (drvr->bus_if->chip) {
+	case BRCM_CC_4345_CHIP_ID:
+	case BRCM_CC_43454_CHIP_ID:
+		ifp->drvr->feat_flags &= ~BIT(BRCMF_FEAT_SCAN_V2);
+		break;
+	default:
+		break;
+	}
 
 	brcmf_feat_wlc_version_overrides(drvr);
 	brcmf_feat_firmware_overrides(drvr);

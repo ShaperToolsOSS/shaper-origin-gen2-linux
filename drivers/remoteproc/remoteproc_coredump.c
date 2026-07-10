@@ -27,6 +27,8 @@ void rproc_coredump_cleanup(struct rproc *rproc)
 {
 	struct rproc_dump_segment *entry, *tmp;
 
+	dev_dbg(&rproc->dev, "cleaning coredump segments\n");
+
 	list_for_each_entry_safe(entry, tmp, &rproc->dump_segments, node) {
 		list_del(&entry->node);
 		kfree(entry);
@@ -48,6 +50,8 @@ EXPORT_SYMBOL_GPL(rproc_coredump_cleanup);
 int rproc_coredump_add_segment(struct rproc *rproc, dma_addr_t da, size_t size)
 {
 	struct rproc_dump_segment *segment;
+
+	dev_dbg(&rproc->dev, "adding coredump segment: 0x%llx size %lu\n", da, size);
 
 	segment = kzalloc(sizeof(*segment), GFP_KERNEL);
 	if (!segment)

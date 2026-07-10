@@ -204,14 +204,23 @@ static void lcdif_crtc_atomic_enable(struct drm_crtc *crtc,
 static void lcdif_crtc_atomic_disable(struct drm_crtc *crtc,
 				      struct drm_atomic_state *state)
 {
-	struct drm_crtc_state *old_crtc_state = drm_atomic_get_old_crtc_state(state,
+	struct drm_crtc_state *new_crtc_state = drm_atomic_get_new_crtc_state(state,
 									      crtc);
 	struct lcdif_crtc *lcdif_crtc = to_lcdif_crtc(crtc);
 	struct lcdif_soc *lcdif = dev_get_drvdata(lcdif_crtc->dev->parent);
 	bool use_i80 = lcdif_drm_connector_is_self_refresh_aware(state);
 
-	if (old_crtc_state->self_refresh_active)
+	/* When entering self-refresh, keep the pipeline and vblank running. */
+	if (new_crtc_state && new_crtc_state->self_refresh_active) {
+		/* Consume any queued event so commit_hw_done() won't warn. */
+		spin_lock_irq(&crtc->dev->event_lock);
+		if (crtc->state->event) {
+			drm_crtc_send_vblank_event(crtc, crtc->state->event);
+			crtc->state->event = NULL;
+		}
+		spin_unlock_irq(&crtc->dev->event_lock);
 		return;
+	}
 
 	spin_lock_irq(&crtc->dev->event_lock);
 	if (crtc->state->event) {

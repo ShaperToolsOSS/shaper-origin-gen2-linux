@@ -97,6 +97,11 @@ struct brcmf_rev_info {
 	u32 nvramrev;
 };
 
+struct brcmf_wlc_version {
+	u16 major;
+	u16 minor;
+};
+
 /* Common structure for module and instance linkage */
 struct brcmf_pub {
 	/* Linkage ponters */
@@ -131,6 +136,7 @@ struct brcmf_pub {
 	u32 chip_quirks;
 
 	struct brcmf_rev_info revinfo;
+	struct brcmf_wlc_version wlc_ver;
 #ifdef DEBUG
 	struct dentry *dbgfs_dir;
 #endif

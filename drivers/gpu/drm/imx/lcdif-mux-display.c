@@ -181,6 +181,7 @@ static int imx_lmuxd_bind(struct device *dev, struct device *master, void *data)
 		else if (!strcmp(fmt, "rgb888"))
 			bus_format = MEDIA_BUS_FMT_RGB888_1X24;
 	}
+	dev_info(dev, "bus format %s\n", fmt);
 	lmuxd->bus_format = bus_format;
 
 	/* port@1 is the output port */

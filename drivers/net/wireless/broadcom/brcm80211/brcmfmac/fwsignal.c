@@ -618,6 +618,9 @@ static inline int brcmf_fws_hanger_poppkt(struct brcmf_fws_hanger *h,
 	return 0;
 }
 
+static void brcmf_fws_flow_control_check(struct brcmf_fws_info *fws,
+					 struct pktq *pq, u8 if_id);
+
 static void brcmf_fws_psq_flush(struct brcmf_fws_info *fws, struct pktq *q,
 				int ifidx)
 {
@@ -626,6 +629,7 @@ static void brcmf_fws_psq_flush(struct brcmf_fws_info *fws, struct pktq *q,
 	struct sk_buff *skb;
 	int prec;
 	u32 hslot;
+	u8 skbidx;
 
 	if (ifidx != -1)
 		matchfn = brcmf_fws_ifidx_match;
@@ -638,6 +642,8 @@ static void brcmf_fws_psq_flush(struct brcmf_fws_info *fws, struct pktq *q,
 			hi->state = BRCMF_FWS_HANGER_ITEM_STATE_FREE;
 			brcmf_fws_hanger_poppkt(&fws->hanger, hslot, &skb,
 						true);
+			skbidx = brcmf_skb_if_flags_get_field(skb, INDEX);
+			brcmf_fws_flow_control_check(fws, q, skbidx);
 			brcmu_pkt_buf_free_skb(skb);
 			skb = brcmu_pktq_pdeq_match(q, prec, matchfn, &ifidx);
 		}

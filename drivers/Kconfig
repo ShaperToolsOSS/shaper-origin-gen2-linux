@@ -248,4 +248,7 @@ source "drivers/cdx/Kconfig"
 source "drivers/dpll/Kconfig"
 
 source "drivers/mxc/Kconfig"
+
+source "drivers/shapertools/Kconfig"
+
 endmenu

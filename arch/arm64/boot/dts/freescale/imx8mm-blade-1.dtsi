@@ -1,0 +1,1015 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright 2022 Shaper Tools, Inc.
+ * - Jeremy Blum <jeremy@shapertools.com>
+ * - Donald Carr <donald@shapertools.com>
+ * - Stephen Street <stephen@shapertools.com>
+ * Copyright 2019 NXP
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/usb/pd.h>
+#include "imx8mm.dtsi"
+
+/ {
+	model = "Shaper i.MX8MM SoM";
+	compatible = "fsl,imx8mm", "shaper,imx8mm-som";
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		m4_reserved: m4@0x4efe0000 {
+			no-map;
+			reg = <0 0x4efe0000 0 0x300000>;
+		};
+
+		vdev0vring0: vdev0vring0@b8000000 {
+			compatible = "shared-dma-pool";
+			reg = <0 0xb8000000 0 0x8000>;
+			no-map;
+		};
+
+		vdev0vring1: vdev0vring1@b8008000 {
+			compatible = "shared-dma-pool";
+			reg = <0 0xb8008000 0 0x8000>;
+			no-map;
+		};
+
+		vdev0buffer: vdev0buffer@b8400000 {
+			compatible = "shared-dma-pool";
+			reg = <0 0xb8400000 0 0x100000>;
+			no-map;
+		};
+
+		m4_spaces: m4_spaces@b8500000 {
+			compatible = "shared-dma-pool";
+			reg = < 0 0xb8500000 0 0x40000 >;
+			no-map;
+		};
+	};
+
+	chosen {
+		stdout-path = &uart2;
+	};
+
+	shaper_m4_rproc: shaper-m4-rproc {
+		compatible = "shapertools,shaper-mcu-rproc";
+		rsrc-table = <
+			0x1         /* Version */
+			0x1         /* Number of resources */
+			0x0 0x0     /* Reserved */
+			0x14        /* offset to resources */
+			3           /* Resource Type VDEV*/
+
+			/* fw_rsc_vdev */
+			7           /* Virtualio id */
+			0           /* Notify Id */
+			1           /* dfeatures NS Support */
+			0           /* gfeatures */
+			0           /* config_len */
+			0x0200      /* u8, status, number of vrings, reserved[2] */
+
+			/* fw_rsc_vdev_vring 0 */
+			0xb8000000U /* da */
+			4096        /* align */
+			256         /* num */
+			0           /* notifyid */
+			0           /* reserved */
+
+			/* fw_rsc_vdev_vring 1 */
+			0xb8008000U /* da */
+			4096        /* align */
+			256         /* num */
+			1           /* notifyid */
+			0           /* reserved */
+		>;
+		clocks = <&clk IMX8MM_CLK_M4_DIV>, <&clk IMX8MM_CLK_SEMA1_ROOT>;
+		clock-names = "m4_div", "sema1";
+		mbox-names = "tx", "rx", "txdb", "rxdb";
+		mboxes = <&mu 0 1 &mu 1 1 &mu 2 1 &mu 3 1>;
+		memory-region = <&vdev0vring0>, <&vdev0vring1>, <&vdev0buffer>;
+		firmware-name = "mcu-firmware.elf";
+		syscon = <&src>;
+	};
+
+	shaper-m4-spaces {
+		compatible = "shapertools,shaper-mcu-space";
+		mbox-names = "tx", "rx", "txdb", "rxdb";
+		mboxes = <&mu 0 2 &mu 1 2 &mu 2 2 &mu 3 2>;
+		space-memory = <&m4_spaces>;
+		rproc = <&shaper_m4_rproc>;
+	};
+
+	shaper-m4-log {
+		compatible = "shapertools,shaper-mcu-log";
+	};
+
+	shaper-m4-capture {
+		compatible = "shapertools,shaper-rpmsg-mcu-capture";
+	};
+	
+	/* USB OTG supply is derived from the 5V input rail */
+	reg_usb_otg1_vbus: regulator-usb-otg1 {
+		regulator-name = "VSYS_5V0-USB1-VBUS";
+		compatible = "regulator-fixed";
+		pinctrl-names = "default";
+		enable-active-high;
+		pinctrl-0 = <&pinctrl_reg_usb1_en>;
+		gpio = <&gpio1 12 GPIO_ACTIVE_HIGH>;  /* Blade 1 USB1_OTG_PWR */
+		regulator-max-microvolt = <5000000>;
+		regulator-min-microvolt = <5000000>;
+		vin-supply = <&reg_vsys_5v0>;
+	};
+
+	/* USB OTG supply is derived from the 5V input rail */
+	reg_usb_otg2_vbus: regulator-usb-otg2 {
+		regulator-name = "VSYS_5V0-USB2_VBUS";
+		compatible = "regulator-fixed";
+		pinctrl-names = "default";
+		enable-active-high;
+		pinctrl-0 = <&pinctrl_reg_usb2_en>;
+		gpio = <&gpio1 19 GPIO_ACTIVE_HIGH>;  /* Blade 1 GPIO1_IO19 */
+		regulator-max-microvolt = <5000000>;
+		regulator-min-microvolt = <5000000>;
+		vin-supply = <&reg_vsys_5v0>;
+	};
+
+	/* SD Card supply is regulated from System 3.3V Rail */
+	reg_usdhc2_vmmc: regulator-usdhc2 {
+		regulator-name = "VDD_3V3-SD"; 
+		compatible = "regulator-fixed";
+		pinctrl-names = "default";
+		enable-active-high;
+		pinctrl-0 = <&pinctrl_reg_usdhc2_vmmc>;
+		gpio = <&gpio2 19 GPIO_ACTIVE_HIGH>;  /* Blade 1 nSDHC2_RST */
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		off-on-delay-us = <20000>;
+		vin-supply = <&reg_pmic_buck4>;
+	};
+
+	/* add construct for "fmac" to control WL_REG_ON signal */
+	usdhc1_pwrseq: usdhc1_pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		reset-gpios = <&gpio2 10 GPIO_ACTIVE_LOW>;  /* Blade 1 WL_REG_ON */
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_wlan_reg_on>;
+		status = "okay";
+	};
+
+	/* Keep BT_REG_ON under kernel reset control for the userspace hciattach flow. */
+	modem_reset: modem-reset {
+		compatible = "gpio-reset";
+		reset-gpios = <&gpio2 6 GPIO_ACTIVE_LOW>; /* Blade 1 BT_REG_ON */
+		initially-in-reset;
+		reset-delay-us = <2000>;
+		reset-post-delay-ms = <100>;
+		#reset-cells = <0>;
+	};
+
+};
+
+&A53_0 {
+	cpu-supply = <&reg_pmic_buck2>;
+};
+
+&A53_1 {
+	cpu-supply = <&reg_pmic_buck2>;
+};
+
+&A53_2 {
+	cpu-supply = <&reg_pmic_buck2>;
+};
+
+&A53_3 {
+	cpu-supply = <&reg_pmic_buck2>;
+};
+
+&fec1 {
+	status = "disabled";
+};
+
+&pcie0{
+	status = "disabled";
+};
+
+&sai3 {
+	status = "disabled";
+};
+
+&sai2 {
+	status = "disabled";
+};
+
+&sai1 {
+	status = "disabled";
+};
+
+&sai5 {
+	status = "disabled";
+};
+
+&sai6 {
+	status = "disabled";
+};
+
+&spdif1 {
+	status = "disabled";
+};
+
+&micfil {
+	status = "disabled";
+};
+
+&snvs_pwrkey {
+	status = "okay";
+};
+
+&uart1 { /* BT */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart1>, <&pinctrl_bt_gpios>;
+	assigned-clocks = <&clk IMX8MM_CLK_UART1>;
+	assigned-clock-parents = <&clk IMX8MM_SYS_PLL1_80M>;
+	fsl,uart-has-rtscts;
+	resets = <&modem_reset>;
+	status = "okay";
+};
+
+&uart2 { /* console */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	status = "okay";
+};
+
+&usbotg1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usbotg1>;
+	over-current-active-low;
+	vbus-supply = <&reg_usb_otg1_vbus>;
+	dr_mode = "otg";
+	hnp-disable;
+	srp-disable;
+	adp-disable;
+	picophy,pre-emp-curr-control = <3>;
+	picophy,dc-vol-level-adjust = <7>;
+	status = "okay";
+};
+
+&usbotg2 {
+	disable-over-current;  /* Not using OC detection right now as its connected to a GPIO instead of hardware OC pin */
+	over-current-active-low;  /* We set the polarity anyways to eliminate the kernel warning */
+	vbus-supply = <&reg_usb_otg2_vbus>;
+	dr_mode = "otg";  /* Note that resistor ties ID pin to GND on the Davis MLB, so we are actually always in host mode for USB2 */
+	hnp-disable;
+	srp-disable;
+	adp-disable;
+	picophy,pre-emp-curr-control = <3>;
+	picophy,dc-vol-level-adjust = <7>;
+	status = "okay";
+};
+
+/* Wi-Fi & Bluetooth Module on Blade 1 SOM */
+&usdhc1 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc1>, <&pinctrl_wlan>;
+	pinctrl-1 = <&pinctrl_usdhc1_100mhz>, <&pinctrl_wlan>;
+	pinctrl-2 = <&pinctrl_usdhc1_200mhz>, <&pinctrl_wlan>;
+	bus-width = <4>;
+
+	vmmc-supply = <&reg_pmic_buck4>;  /* This is the power supply for the Wireless Module:  BUCK4 (VDD_3V3) */
+	vqmmc-supply = <&reg_pmic_buck5>;  /* This is the IO supply for the SDHC1 interface, which is in the NVCC_SD1 power domain. This domain is powered by BUCK5 (VDD_1V8) from the PMIC */
+	voltage-ranges = <1800 1800>;  /* The IO supply operates at 1.8V */
+
+	cap-power-off-card;
+	non-removable;
+	pm-ignore-notify;
+	keep-power-in-suspend;
+
+	mmc-pwrseq = <&usdhc1_pwrseq>;
+	status = "okay";
+
+	brcmf: bcrmf@1 {
+		reg = <1>;
+		compatible = "brcm,bcm4329-fmac";
+		interrupt-parent = <&gpio2>;
+		/* When using a direct connection (as we are) this WAKE is LEVEL_HIGH */
+		/* https://community.murata.com/s/question/0D55F00009ZGrucSAD/oob-interrupts-on-1mw */
+		interrupts = <9 IRQ_TYPE_LEVEL_HIGH>; /* WL_HOST_WAKE */
+		interrupt-names = "host-wake";
+	};
+};
+
+/* SDHC Card Socket on Carrier Board */
+&usdhc2 {
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
+	pinctrl-1 = <&pinctrl_usdhc2_100mhz>, <&pinctrl_usdhc2_gpio>;
+	pinctrl-2 = <&pinctrl_usdhc2_200mhz>, <&pinctrl_usdhc2_gpio>;
+	bus-width = <4>;
+
+	vmmc-supply = <&reg_usdhc2_vmmc>;  /* Dedicated regulator is specified for carrier board SD card, because a load switch controlled by SD reset shall be used to toggle power to the SD Card */
+	vqmmc-supply = <&reg_pmic_ldo5>;  /* This is the IO supply for the SDHC2 interface, which is in the NVCC_SD2 power domain. This domain is powered by LDO5 (NVCC_SD2) from the PMIC */
+	voltage-ranges = <1800 1800 3300 3300>;  /* The IO supply can switch between 1.8V and 3.3V depending on the operating speed of the card */
+
+	status = "okay";
+	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
+	disable-wp;
+};
+
+/* eMMC on Blade 1 SOM */
+&usdhc3 {
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc3>;
+	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
+	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
+	bus-width = <8>;
+
+	vmmc-supply = <&reg_pmic_buck4>;  /* This is the power supply for the eMMC:  BUCK4 (VDD_3V3) */
+	vqmmc-supply = <&reg_pmic_buck5>;  /* This is the IO supply for the SDHC3 interface, which is in the NVCC_NAND power domain. This domain is powered by BUCK5 (VDD_1V8) from the PMIC */
+	voltage-ranges = <1800 1800>;  /* The IO supply operates at 1.8V */
+
+	non-removable;
+	status = "okay";
+
+	emmc: emmc@0 {
+		compatible = "fsl,imx8mm-usdhc";
+	};
+};
+
+&wdog1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_wdog>;
+	fsl,ext-reset-output;
+	status = "okay";
+};
+
+&i2c1 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c1>;
+	status = "okay";
+
+	eeprom: eeprom@50 {
+		compatible = "atmel,24c64"; /* 24AA64 */
+		reg = <0x50>;
+		pagesize = <32>;
+		status = "disabled"; /* We do not populate the EEPROM on the Blade 1 SOM */
+	};
+
+	pmic_nxp: pca9450@25 {
+		compatible = "nxp,pca9450a";
+		reg = <0x25>;
+		pinctrl-0 = <&pinctrl_pmic>;
+		pinctrl-names = "default";
+		interrupt-parent = <&gpio1>;
+		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
+
+		regulators {
+
+			/* PMIC BUCK1 (VDD_SOCx, VDD_ARM_PLL_0P8, VDD_ANA_0P8x)
+			 * PMIC BUCK1 Supports DVS, +/-2% Accurate, 12.5mV Steps
+			 * PMIC BUCK1 is set to 0.850V by SPL
+			 * PMIC BUCK1 min output voltage is 0.600V
+			 * PMIC BUCK1 max output voltage is 2.1875V
+			 * PMIC BUCK1 powers the following rails on the SoC:
+			 *   -> VDD_SOCx without PCIE (0.780V-0.900V) -> Typ=0.820V -> Op=0.800V
+			 *   -  VDD_SOCx with PCIE    (0.805V-0.900V) -> Typ=0.850V
+			 *   -> VDD_ARM_PLL_0P8       (0.780V-0.900V) -> Typ=0.820V -> Op=0.800V
+			 *   -> VDD_ANA_0P8x          (0.780V-0.900V) -> Typ=0.820V -> Op=0.800V
+			 * For minimum heat, we set to 800mV (784mV min with 2% accuracy)
+			 */
+			reg_pmic_buck1: BUCK1 {
+				regulator-name = "BUCK1";
+				nxp,dvs-run-voltage = <800000>;
+				nxp,dvs-standby-voltage = <800000>;
+				regulator-max-microvolt = <850000>;
+				regulator-min-microvolt = <800000>;
+				regulator-boot-on;
+				regulator-always-on;
+				regulator-ramp-delay = <3125>;
+			};
+
+			/* PMIC BUCK2 (VDD_ARMx)
+			 * PMIC BUCK2 Supports DVS, +/-2% Accurate, 12.5mV Steps
+			 * PMIC BUCK2 is set to 1.000V by SPL
+			 * PMIC BUCK2 min output voltage is 0.600V
+			 * PMIC BUCK2 max output voltage is 2.1875V
+			 * PMIC BUCK2 powers the following rails on the SoC:
+			 *   -> VDD_ARMx 1.0GHz (0.805V-0.950V) -> Typ=0.850V -> Op=0.825V  (Datasheet Spec)
+			 *   -> VDD_ARMx 1.2GHz (0.805V-0.950V) -> Typ=0.850V -> Op=0.825V  (Datasheet Spec)
+			 *   -> VDD_ARMx 1.4GHz (0.850V-0.950V) -> Typ=0.900V -> Op=0.875V  (Interpolated Value Validated by Shaper and NXP FAE)
+			 *   -> VDD_ARMx 1.5GHz (0.850V-0.950V) -> Typ=0.900V -> Op=0.875V  (Interpolated Value Validated by Shaper and NXP FAE)
+			 *   -> VDD_ARMx 1.6GHz (0.900V-1.000V) -> Typ=0.950V -> Op=0.925V  (Datasheet Spec)
+			 *   -> VDD_ARMx 1.8GHz (0.950V-1.050V) -> Typ=1.000V -> Op=0.975V  (Datasheet Spec)
+			 * For minimum heat, we set to 825mV/875mV/925mV/975mV (808.5mV/857.5mV/906.5mV/955.5mV min with 2% accuracy)
+			 */
+			reg_pmic_buck2: BUCK2 {
+				regulator-name = "BUCK2";
+				nxp,dvs-run-voltage = <975000>;
+				nxp,dvs-standby-voltage = <825000>;
+				regulator-max-microvolt = <1000000>;
+				regulator-min-microvolt = <825000>;
+				regulator-boot-on;
+				regulator-always-on;
+				regulator-ramp-delay = <3125>;
+			};
+
+			/* PMIC BUCK3 (VDD_VPUx, VDD_GPUx, VDD_DRAM, VDD_DRAMx_PLL_0P8)
+			 * PMIC BUCK3 Supports DVS, +/-2% Accurate, 12.5mV Steps
+			 * PMIC BUCK3 is set to 0.950V by SPL
+			 * PMIC BUCK3 min output voltage is 0.600V
+			 * PMIC BUCK3 max output voltage is 2.1875V
+			 * PMIC BUCK3 powers the following rails on the SoC:
+			 *   -  VDD_VPUx 450/450/450MHz         (0.805V-0.900V) -> Typ=0.850V
+			 *   -> VDD_VPUx 600/650/650MHz         (0.855V-0.950V) -> Typ=0.900V -> Op=0.875V
+			 *   -  VDD_VPUx 700/750/750MHz         (0.900V-1.000V) -> Typ=0.950V
+			 *   -  VDD_GPUx Nominal Mode/800MHz    (0.805V-0.900V) -> Typ=0.850V
+			 *   -> VDD_GPUx Overdrive Mode/1000MHz (0.855V-1.000V) -> Typ=0.900V -> Op=0.875V
+			 *   -  VDD_DRAM Up to 1.0GHZ DDR Clock (0.805V-0.900V) -> Typ=0.850V
+			 *   -> VDD_DRAM Up to 1.2GHZ DDR Clock (0.855V-0.950V) -> Typ=0.900V -> Op=0.875V
+			 *   -  VDD_DRAM Up to 1.5GHZ DDR Clock (0.900V-1.000V) -> Typ=0.950V
+			 *   -> VDD_DRAMx_PLL_0P8               (0.805V-1.000V) -> Typ=0.850V -> Op=0.875V
+			 * NOTE: Explicitly setting the DVS values appears to be necessary.
+			 *       Otherwise the BUCK resets to 0.850V at Kernel init
+			 * For minimum heat, we set to 875mV (857.5mV min with 2% accuracy)
+			 */
+			reg_pmic_buck3: BUCK3 {
+				regulator-name = "BUCK3";
+				nxp,dvs-run-voltage = <875000>;
+				nxp,dvs-standby-voltage = <875000>;
+				regulator-max-microvolt = <950000>;
+				regulator-min-microvolt = <850000>;
+				regulator-boot-on;
+				regulator-always-on;
+				regulator-ramp-delay = <3125>;
+			};
+
+			/* PMIC BUCK4 (VDD_3V3)
+			 * PMIC BUCK4 is +/-2% Accurate, 25mV Steps
+			 * PMIC BUCK4 is defaulted to 3.300V at reset
+			 * PMIC BUCK4 min output voltage is 0.600V
+			 * PMIC BUCK4 max output voltage is 3.400V
+			 * PMIC BUCK4 powers the following rails on the SoC:
+			 *   -> NVCC_SAI1  (3.000V-3.6000V) -> Typ=3.300V
+			 *   -> NVCC_SAI2  (3.000V-3.6000V) -> Typ=3.300V
+			 *   -> NVCC_SAI3  (3.000V-3.6000V) -> Typ=3.300V
+			 *   -> NVCC_SAI5  (3.000V-3.6000V) -> Typ=3.300V
+			 *   -> NVCC_GPIO1 (3.000V-3.6000V) -> Typ=3.300V
+			 *   -> NVCC_I2C   (3.000V-3.6000V) -> Typ=3.300V
+			 *   -> NVCC_UART  (3.000V-3.6000V) -> Typ=3.300V
+			 *   -> NVCC_ECSPI (3.000V-3.6000V) -> Typ=3.300V
+			 *   -> NVCC_ENET  (3.000V-3.6000V) -> Typ=3.300V
+			 * PMIC BUCK4 also powers:
+			 *   -> eMMC
+			 *   -> Wi-Fi
+			 *   -> Carrier Board 3.3V Rail
+			 */
+			reg_pmic_buck4: BUCK4 {
+				regulator-name = "BUCK4";
+				regulator-min-microvolt = <3300000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			/* PMIC BUCK5 (VDD_1V8)
+			 * PMIC BUCK5 is +/-2% Accurate, 25mV Steps
+			 * PMIC BUCK5 is defaulted to 1.800V at reset
+			 * PMIC BUCK5 min output voltage is 0.600V
+			 * PMIC BUCK5 max output voltage is 3.400V
+			 * PMIC BUCK5 powers the following rails on the SoC:
+			 *   -> NVCC_JTAG (1.650V-1.950V) -> Typ=1.800V
+			 *   -> NVCC_NAND (1.650V-1.950V) -> Typ=1.800V
+			 *   -> NVCC_SD1  (1.650V-1.950V) -> Typ=1.800V
+			 *   -> NVCC_CLK  (1.650V-1.950V) -> Typ=1.800V
+			 *   -> PVCCx_1P8 (1.650V-1.950V) -> Typ=1.800V
+			 * PMIC BUCK5 also powers:
+			 *   -> eMMC
+			 *   -> Carrier Board 1.8V Rail
+			 */
+			reg_pmic_buck5: BUCK5 {
+				regulator-name = "BUCK5";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			/* PMIC BUCK6 (NVCC_DRAM)
+			 * PMIC BUCK4 is +/-2% Accurate, 25mV Steps
+			 * PMIC BUCK6 is defaulted to 1.100V at reset
+			 * PMIC BUCK6 is then set to 1.200V by SPL, as that is the required voltage for DDR4 (vs. LPDDR4)
+			 * PMIC BUCK6 min output voltage is 0.600V
+			 * PMIC BUCK6 max output voltage is 3.400V
+			 * PMIC BUCK6 powers the following rails on the SoC:
+			 *   -> NVCC_DRAM - DDR4 (1.14V-1.26V) -> Typ=1.200V
+			 * PMIC BUCK6 also powers:
+			 *   -> DDR4 memory chips
+			 */
+			reg_pmic_buck6: BUCK6 {
+				regulator-name = "BUCK6";
+				regulator-min-microvolt = <1200000>;
+				regulator-max-microvolt = <1200000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			/* PMIC LDO1 (NVCC_SNVS_1P8)
+			 * PMIC LDO1 is defaulted to 1.800V at reset
+			 * PMIC LDO1 min output voltage is 1.600V
+			 * PMIC LDO1 max output voltage is 3.300V
+			 * PMIC LDO1 powers the following rails on the SoC:
+			 *   -> NVCC_SNVS_1P8 (1.620V-1.980V) -> Typ=1.800V
+			 */
+			reg_pmic_ldo1: LDO1 {
+				regulator-name = "LDO1";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			/* PMIC LDO2 (VDD_SNVS_0P8)
+			 * PMIC LDO2 is defaulted to 0.850V at reset
+			 * PMIC LDO2 min output voltage is 0.800V
+			 * PMIC LDO2 max output voltage is 1.150V
+			 * PMIC LDO2 powers the following rails on the SoC:
+			 *   -> VDD_SNVS_0P8 (0.760V-0.900V) -> Typ=0.800V
+			 */
+			reg_pmic_ldo2: LDO2 {
+				regulator-name = "LDO2";
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <900000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			/* PMIC LDO3 (VDD_ANA_1P8)
+			 * PMIC LDO3 is defaulted to 1.800V at reset
+			 * PMIC LDO3 min output voltage is 0.800V
+			 * PMIC LDO3 max output voltage is 3.300V
+			 * PMIC LDO3 powers the following rails on the SoC:
+			 *   -> VDD_DRAM_PLL_1P8 (1.710V-1.890V) -> Typ=1.800V
+			 *   -> VDD_ARM_PLL_1P8  (1.710V-1.890V) -> Typ=1.800V
+			 *   -> VDD_ANAx_1P8     (1.710V-1.890V) -> Typ=1.800V
+			 *   -> VDD_USB_1P8      (1.710V-1.890V) -> Typ=1.800V
+			 *   -> VDD_MIPI_1P8     (1.710V-1.890V) -> Typ=1.800V
+			 */
+			reg_pmic_ldo3: LDO3 {
+				regulator-name = "LDO3";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			/* PMIC LDO4 (VDD_MIPI_0P9)
+			 * PMIC LDO4 is defaulted to 0.900V at reset
+			 * PMIC LDO4 min output voltage is 0.800V
+			 * PMIC LDO4 max output voltage is 3.300V
+			 * PMIC LDO4 powers the following rails on the SoC:
+			 *   -> VDD_MIPI_0P9 (0.855-1.000V) -> Typ=0.900V
+			 */
+			reg_pmic_ldo4: LDO4 {
+				regulator-name = "LDO4";
+				regulator-min-microvolt = <900000>;
+				regulator-max-microvolt = <900000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			/* PMIC LDO5 (NVCC_SD2)
+			 * PMIC LDO5 is defaulted to 3.300V at reset
+			 * PMIC LDO5 can switch between 1.8V and 3.3V depending on SD card mode
+			 * PMIC LDO5 turns off automatically when no SD card is in use
+			 * PMIC LDO5 min output voltage is 1.800V
+			 * PMIC LDO5 max output voltage is 3.300V
+			 * PMIC LDO5 powers the following rails on the SoC:
+			 *   -> NVCC_SD2 (1.650-1.950V) -> Typ=1.800V (1.8V Operating Mode)
+			 *   -> NVCC_SD2 (3.000-3.600V) -> Typ=3.300V (3.3V Operating Mode)
+			 */
+			reg_pmic_ldo5: LDO5 {
+				regulator-name = "LDO5";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <3300000>;
+			};
+		};
+	};
+};
+
+&i2c2 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c2>;
+	status = "okay";
+};
+
+&i2c4 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c4>;
+	status = "okay";
+};
+
+&gpio1 {
+	gpio-line-names = "MCU_CLKOUT_32K",		/* 00 */
+			  "SODIMM_258",			/* 01 */
+			  "nWDOG_RST",			/* 02 */
+			  "nPIC_INT",			/* 03 */
+			  "SDHC2_VSEL",			/* 04 */
+			  "SODIMM_187",			/* 05 */
+			  "SODIMM_177",			/* 06 */
+			  "SODIMM_189",			/* 07 */
+			  "SODIMM_136",			/* 08 */
+			  "SODIMM_42",			/* 09 */
+			  "SODIMM_40",			/* 10 */
+			  "SODIMM_53",			/* 11 */
+			  "SODIMM_204",			/* 12 */
+			  "SODIMM_206",			/* 13 */
+			  "SODIMM_63",			/* 14 */
+			  "SODIMM_111",			/* 15 */
+			  "SODIMM_209",			/* 16 */
+			  "SODIMM_207",			/* 17 */
+			  "SODIMM_106",			/* 18 */
+			  "SODIMM_104",			/* 19 */
+			  "SODIMM_216",			/* 20 */
+			  "SODIMM_218",			/* 21 */
+			  "SODIMM_39",			/* 22 */
+			  "SODIMM_201",			/* 23 */
+			  "SODIMM_44",			/* 24 */
+			  "SODIMM_80",			/* 25 */
+			  "SODIMM_78",			/* 26 */
+			  "SODIMM_37",			/* 27 */
+			  "SODIMM_160",			/* 28 */
+			  "SODIMM_203",			/* 29 */
+			  "DNE",			/* 30 */
+			  "DNE";			/* 31 */
+};
+
+&gpio2 {
+	gpio-line-names = "SDHC1_CLK",			/* 00 */
+			  "SDHC1_CMD",			/* 01 */
+			  "SDHC1_DATA0",		/* 02 */
+			  "SDHC1_DATA1",		/* 03 */
+			  "SDHC1_DATA2",		/* 04 */
+			  "SDHC1_DATA3",		/* 05 */
+			  "BT_REG_ON",			/* 06 */
+			  "BT_WAKE_DEV",		/* 07 */
+			  "BT_WAKE_HOST",		/* 08 */
+			  "WL_WAKE_HOST",		/* 09 */
+			  "WL_REG_ON",			/* 10 */
+			  "SODIMM_149",			/* 11 */
+			  "SODIMM_228",			/* 12 */
+			  "SODIMM_221",			/* 13 */
+			  "SODIMM_222",			/* 14 */
+			  "SODIMM_223",			/* 15 */
+			  "SODIMM_225",			/* 16 */
+			  "SODIMM_226",			/* 17 */
+			  "SODIMM_224",			/* 18 */
+			  "SODIMM_227",			/* 19 */
+			  "SODIMM_219",			/* 20 */
+			  "DNE",			/* 21 */
+			  "DNE",			/* 22 */
+			  "DNE",			/* 23 */
+			  "DNE",			/* 24 */
+			  "DNE",			/* 25 */
+			  "DNE",			/* 26 */
+			  "DNE",			/* 27 */
+			  "DNE",			/* 28 */
+			  "DNE",			/* 29 */
+			  "DNE",			/* 30 */
+			  "DNE";			/* 31 */
+
+	bt_dev_wake_gpio {
+		/*
+		 * BT_DEV_WAKE defaults high so userspace "hciattach ... nosleep" starts
+		 * from a deterministic awake state without sysfs/gpio jiggling.
+		 */
+		gpio-hog;
+		gpios = <7 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "bt_dev_wake";
+	};
+
+};
+
+&gpio3 {
+	gpio-line-names = "RTC_INT_N",			/* 00 */
+			  "SODIMM_147",			/* 01 */
+			  "SDHC3_STROBE",		/* 02 */
+			  "SDHC3_DATA5",		/* 03 */
+			  "SDHC3_DATA6",		/* 04 */
+			  "SDHC3_DATA7",		/* 05 */
+			  "SODIMM_158",			/* 06 */
+			  "SODIMM_199",			/* 07 */
+			  "SODIMM_97",			/* 08 */
+			  "SODIMM_99",			/* 09 */
+			  "SDHC3_DATA0",		/* 10 */
+			  "SDHC3_DATA1",		/* 11 */
+			  "SDHC3_DATA2",		/* 12 */
+			  "SDHC3_DATA3",		/* 13 */
+			  "SODIMM_107",			/* 14 */
+			  "SDHC3_DATA4",		/* 15 */
+			  "nSDHC3_RST",			/* 16 */
+			  "SDHC3_CLK",			/* 17 */
+			  "SDH3_CMD",			/* 18 */
+			  "SODIMM_100",			/* 19 */
+			  "SODIMM_90",			/* 20 */
+			  "SODIMM_88",			/* 21 */
+			  "SODIMM_94",			/* 22 */
+			  "SODIMM_98",			/* 23 */
+			  "SODIMM_96",			/* 24 */
+			  "SODIMM_92",			/* 25 */
+			  "DNE",			/* 26 */
+			  "DNE",			/* 27 */
+			  "DNE",			/* 28 */
+			  "DNE",			/* 29 */
+			  "DNE",			/* 30 */
+			  "DNE";			/* 31 */
+};
+
+&gpio4 {
+	gpio-line-names = "SODIMM_168",			/* 00 */
+			  "SODIMM_202",			/* 01 */
+			  "SODIMM_167",			/* 02 */
+			  "SODIMM_169",			/* 03 */
+			  "SODIMM_57",			/* 04 */
+			  "SODIMM_59",			/* 05 */
+			  "SODIMM_213",			/* 06 */
+			  "SODIMM_55",			/* 07 */
+			  "SODIMM_193",			/* 08 */
+			  "SODIMM_195",			/* 09 */
+			  "SODIMM_210",			/* 10 */
+			  "SODIMM_212",			/* 11 */
+			  "SODIMM_138",			/* 12 */
+			  "SODIMM_170",			/* 13 */
+			  "SODIMM_172",			/* 14 */
+			  "SODIMM_174",			/* 15 */
+			  "SODIMM_43",			/* 16 */
+			  "SODIMM_41",			/* 17 */
+			  "SODIMM_140",			/* 18 */
+			  "SODIMM_142",			/* 19 */
+			  "SODIMM_200",			/* 20 */
+			  "UART1_MCU_TXD_SODIMM_30",	/* 21 */
+			  "UART1_MCU_RXD_SODIMM_32",	/* 22 */
+			  "nUART1_MCU_RTS_SODIMM_36",	/* 23 */
+			  "nUART1_MCU_CTS_SODIMM_34",	/* 24 */
+			  "SODIMM_84",			/* 25 */
+			  "SODIMM_82",			/* 26 */
+			  "SODIMM_175",			/* 27 */
+			  "SODIMM_154",			/* 28 */
+			  "SODIMM_215",			/* 29 */
+			  "SODIMM_47",			/* 30 */
+			  "SODIMM_183";			/* 31 */
+};
+
+/* TODO: We could define GPIO5 names too, but we know that that GPIO5 is fully owned by the M4 in our application, so we don't bother for now. */ 
+
+&iomuxc {
+	pinctrl-names = "default";
+
+	pinctrl_usbotg1: usbotg1grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_GPIO1_IO13_USB1_OTG_OC		0x16
+		>;
+	};
+
+	pinctrl_reg_usb1_en: regusb1engrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_GPIO1_IO12_GPIO1_IO12		0x16
+		>;
+	};
+
+	pinctrl_reg_usb2_en: regusb2engrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_ENET_TD2_GPIO1_IO19		0x16
+		>;
+	};
+
+	pinctrl_i2c1: i2c1grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C1_SCL_I2C1_SCL			0x400000c3
+			MX8MM_IOMUXC_I2C1_SDA_I2C1_SDA			0x400000c3
+		>;
+	};
+
+	pinctrl_rtc_isl1208: rtcisl1208grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_NAND_ALE_GPIO3_IO0			0x41
+		>;
+	};
+
+	pinctrl_i2c2: i2c2grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C2_SCL_I2C2_SCL			0x400000c3
+			MX8MM_IOMUXC_I2C2_SDA_I2C2_SDA			0x400000c3
+		>;
+	};
+
+	pinctrl_i2c3: i2c3grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C3_SCL_I2C3_SCL			0x400000c3
+			MX8MM_IOMUXC_I2C3_SDA_I2C3_SDA			0x400000c3
+		>;
+	};
+
+	pinctrl_i2c4: i2c4grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C4_SCL_I2C4_SCL			0x400000c3
+			MX8MM_IOMUXC_I2C4_SDA_I2C4_SDA			0x400000c3
+		>;
+	};
+
+	pinctrl_pmic: pmicirq {
+		fsl,pins = <
+			MX8MM_IOMUXC_GPIO1_IO03_GPIO1_IO3		0x41
+		>;
+	};
+
+	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmc {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD2_RESET_B_GPIO2_IO19		0x41
+		>;
+	};
+
+	pinctrl_uart1: uart1grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_SAI2_RXC_UART1_DCE_RX		0x16
+			MX8MM_IOMUXC_SAI2_RXFS_UART1_DCE_TX		0x16
+			MX8MM_IOMUXC_SAI2_TXFS_UART1_DCE_CTS_B		0x1816
+			MX8MM_IOMUXC_SAI2_RXD0_UART1_DCE_RTS_B		0x16
+		>;
+	};
+
+	pinctrl_uart2: uart2grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_SAI3_TXFS_UART2_DCE_RX		0x16
+			MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX		0x16
+		>;
+	};
+
+	pinctrl_wlan: wlangrp {
+		fsl,pins = <
+			/* SD1 Block is powered by 1.8V Rail, so internal pullups are OK */
+			MX8MM_IOMUXC_SD1_DATA7_GPIO2_IO9		0x111  /* WL_HOST_WAKE - Active High Level Interrupt, so we pull it down */
+		>;
+	};
+
+	pinctrl_wlan_reg_on: wlanregongrp {
+		fsl,pins = <
+			/* SD1 Block is powered by 1.8V Rail, so internal pullups are OK */
+			/* WL_REG_ON is active high; 1MW has ~200K internal pulldown */
+			MX8MM_IOMUXC_SD1_RESET_B_GPIO2_IO10		0x1c4  /* WL_REG_ON */
+		>;
+	};
+
+	pinctrl_bt_gpios: btgpiosgrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_GPIO1_IO00_ANAMIX_REF_CLK_32K	0x000  /* MCU_CLKOUT_32K */
+			/* SD1 Block is powered by 1.8V Rail, so internal pullups are OK */
+			/* BT_REG_ON is active high; 1MW has ~200K internal pulldown */
+			MX8MM_IOMUXC_SD1_DATA4_GPIO2_IO6		0x1c4  /* BT_REG_ON */
+			MX8MM_IOMUXC_SD1_DATA5_GPIO2_IO7		0x16   /* BT_DEV_WAKE (driven high by gpio-hog) */
+			MX8MM_IOMUXC_SD1_DATA6_GPIO2_IO8		0x111  /* BT_HOST_WAKE - active high, pulled down */
+		>;
+	};
+
+	pinctrl_usdhc2_gpio: usdhc2grpgpio {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD2_CD_B_GPIO2_IO12		0x41
+		>;
+	};
+
+	pinctrl_usdhc1: usdhc1grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD1_CLK_USDHC1_CLK			0x190
+			MX8MM_IOMUXC_SD1_CMD_USDHC1_CMD			0x1d0
+			MX8MM_IOMUXC_SD1_DATA0_USDHC1_DATA0		0x1d0
+			MX8MM_IOMUXC_SD1_DATA1_USDHC1_DATA1		0x1d0
+			MX8MM_IOMUXC_SD1_DATA2_USDHC1_DATA2		0x1d0
+			MX8MM_IOMUXC_SD1_DATA3_USDHC1_DATA3		0x1d0
+		>;
+	};
+
+	pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD1_CLK_USDHC1_CLK			0x194
+			MX8MM_IOMUXC_SD1_CMD_USDHC1_CMD			0x1d4
+			MX8MM_IOMUXC_SD1_DATA0_USDHC1_DATA0		0x1d4
+			MX8MM_IOMUXC_SD1_DATA1_USDHC1_DATA1		0x1d4
+			MX8MM_IOMUXC_SD1_DATA2_USDHC1_DATA2		0x1d4
+			MX8MM_IOMUXC_SD1_DATA3_USDHC1_DATA3		0x1d4
+		>;
+	};
+
+	pinctrl_usdhc1_200mhz: usdhc1grp200mhz {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD1_CLK_USDHC1_CLK			0x196
+			MX8MM_IOMUXC_SD1_CMD_USDHC1_CMD			0x1d6
+			MX8MM_IOMUXC_SD1_DATA0_USDHC1_DATA0		0x1d6
+			MX8MM_IOMUXC_SD1_DATA1_USDHC1_DATA1		0x1d6
+			MX8MM_IOMUXC_SD1_DATA2_USDHC1_DATA2		0x1d6
+			MX8MM_IOMUXC_SD1_DATA3_USDHC1_DATA3		0x1d6
+		>;
+	};
+
+	pinctrl_usdhc2: usdhc2grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK			0x016
+			MX8MM_IOMUXC_SD2_CMD_USDHC2_CMD			0x016
+			MX8MM_IOMUXC_SD2_DATA0_USDHC2_DATA0		0x1816
+			MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x016
+			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x016
+			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x016
+			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x0d0
+		>;
+	};
+
+	pinctrl_usdhc2_100mhz: usdhc2grp100mhz {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK			0x094
+			MX8MM_IOMUXC_SD2_CMD_USDHC2_CMD			0x0d4
+			MX8MM_IOMUXC_SD2_DATA0_USDHC2_DATA0		0x0d4
+			MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x0d4
+			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x0d4
+			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x0d4
+			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x0d0
+		>;
+	};
+
+	pinctrl_usdhc2_200mhz: usdhc2grp200mhz {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK			0x096
+			MX8MM_IOMUXC_SD2_CMD_USDHC2_CMD			0x0d6
+			MX8MM_IOMUXC_SD2_DATA0_USDHC2_DATA0		0x0d6
+			MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x0d6
+			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x0d6
+			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x0d6
+			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x0d0
+		>;
+	};
+
+	pinctrl_usdhc3: usdhc3grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK		0x00000016
+			MX8MM_IOMUXC_NAND_WP_B_USDHC3_CMD		0x00000016
+			MX8MM_IOMUXC_NAND_DATA04_USDHC3_DATA0		0x00000016
+			MX8MM_IOMUXC_NAND_DATA05_USDHC3_DATA1		0x00000016
+			MX8MM_IOMUXC_NAND_DATA06_USDHC3_DATA2		0x00000016
+			MX8MM_IOMUXC_NAND_DATA07_USDHC3_DATA3		0x00000016
+			MX8MM_IOMUXC_NAND_RE_B_USDHC3_DATA4		0x00000016
+			MX8MM_IOMUXC_NAND_CE2_B_USDHC3_DATA5		0x00000016
+			MX8MM_IOMUXC_NAND_CE3_B_USDHC3_DATA6		0x00000016
+			MX8MM_IOMUXC_NAND_CLE_USDHC3_DATA7		0x00000016
+			MX8MM_IOMUXC_NAND_CE1_B_USDHC3_STROBE		0x00000016
+		>;
+	};
+
+	pinctrl_usdhc3_100mhz: usdhc3grp100mhz {
+		fsl,pins = <
+			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK		0x00000016
+			MX8MM_IOMUXC_NAND_WP_B_USDHC3_CMD		0x00000016
+			MX8MM_IOMUXC_NAND_DATA04_USDHC3_DATA0		0x00000016
+			MX8MM_IOMUXC_NAND_DATA05_USDHC3_DATA1		0x00000016
+			MX8MM_IOMUXC_NAND_DATA06_USDHC3_DATA2		0x00000016
+			MX8MM_IOMUXC_NAND_DATA07_USDHC3_DATA3		0x00000016
+			MX8MM_IOMUXC_NAND_RE_B_USDHC3_DATA4		0x00000016
+			MX8MM_IOMUXC_NAND_CE2_B_USDHC3_DATA5		0x00000016
+			MX8MM_IOMUXC_NAND_CE3_B_USDHC3_DATA6		0x00000016
+			MX8MM_IOMUXC_NAND_CLE_USDHC3_DATA7		0x00000016
+			MX8MM_IOMUXC_NAND_CE1_B_USDHC3_STROBE		0x00000016
+		>;
+	};
+
+	pinctrl_usdhc3_200mhz: usdhc3grp200mhz {
+		fsl,pins = <
+			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK		0x00000016
+			MX8MM_IOMUXC_NAND_WP_B_USDHC3_CMD		0x00000016
+			MX8MM_IOMUXC_NAND_DATA04_USDHC3_DATA0		0x00000016
+			MX8MM_IOMUXC_NAND_DATA05_USDHC3_DATA1		0x00000016
+			MX8MM_IOMUXC_NAND_DATA06_USDHC3_DATA2		0x00000016
+			MX8MM_IOMUXC_NAND_DATA07_USDHC3_DATA3		0x00000016
+			MX8MM_IOMUXC_NAND_RE_B_USDHC3_DATA4		0x00000016
+			MX8MM_IOMUXC_NAND_CE2_B_USDHC3_DATA5		0x00000016
+			MX8MM_IOMUXC_NAND_CE3_B_USDHC3_DATA6		0x00000016
+			MX8MM_IOMUXC_NAND_CLE_USDHC3_DATA7		0x00000016
+			MX8MM_IOMUXC_NAND_CE1_B_USDHC3_STROBE		0x00000016
+		>;
+	};
+
+	pinctrl_wdog: wdoggrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B		0x00000056
+		>;
+	};
+};
+
+&gpu {
+	status = "okay";
+	resets = <&src IMX8MQ_RESET_GPU_RESET>;
+};

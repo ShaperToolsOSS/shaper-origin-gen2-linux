@@ -1104,6 +1104,7 @@ static int ov9282_configure_regulators(struct ov9282 *ov9282)
  */
 static int ov9282_parse_hw_config(struct ov9282 *ov9282)
 {
+	dev_info(ov9282->dev, "ov9282_parse_hw_config");
 	struct fwnode_handle *fwnode = dev_fwnode(ov9282->dev);
 	struct v4l2_fwnode_endpoint bus_cfg = {
 		.bus_type = V4L2_MBUS_CSI2_DPHY
@@ -1113,8 +1114,10 @@ static int ov9282_parse_hw_config(struct ov9282 *ov9282)
 	unsigned int i;
 	int ret;
 
-	if (!fwnode)
+	if (!fwnode) {
+		dev_err(ov9282->dev, "no fwnode");
 		return -ENXIO;
+	}
 
 	/* Request optional reset pin */
 	ov9282->reset_gpio = devm_gpiod_get_optional(ov9282->dev, "reset",
@@ -1144,13 +1147,17 @@ static int ov9282_parse_hw_config(struct ov9282 *ov9282)
 	}
 
 	ep = fwnode_graph_get_next_endpoint(fwnode, NULL);
-	if (!ep)
+	if (!ep) {
+		dev_err(ov9282->dev, "fwnode_graph_get_next_endpoint barfed");
 		return -ENXIO;
+	}
 
 	ret = v4l2_fwnode_endpoint_alloc_parse(ep, &bus_cfg);
 	fwnode_handle_put(ep);
-	if (ret)
+	if (ret) {
+		dev_err(ov9282->dev, "v4l2_fwnode_endpoint_alloc_parse barfed");
 		return ret;
+	}
 
 	ov9282->noncontinuous_clock =
 		bus_cfg.bus.mipi_csi2.flags & V4L2_MBUS_CSI2_NONCONTINUOUS_CLOCK;
@@ -1173,6 +1180,7 @@ static int ov9282_parse_hw_config(struct ov9282 *ov9282)
 		if (bus_cfg.link_frequencies[i] == OV9282_LINK_FREQ)
 			goto done_endpoint_free;
 
+	dev_err(ov9282->dev, "awful driver barfs if you don't ollie this");
 	ret = -EINVAL;
 
 done_endpoint_free:

@@ -1,0 +1,24 @@
+root@SO2-NNP7CB9-7-0-0-3:~# lsmod
+Module                  Size  Used by
+nls_iso8859_1          16384  1
+nls_cp437              20480  1
+vfat                   20480  1
+fat                    57344  1 vfat
+brcmfmac              221184  0
+brcmutil               16384  1 brcmfmac
+cfg80211              544768  1 brcmfmac
+mx6s_capture           28672  0
+videobuf2_dma_contig    16384  1 mx6s_capture
+videobuf2_memops       16384  1 videobuf2_dma_contig
+videobuf2_v4l2         20480  1 mx6s_capture
+videobuf2_common       49152  2 videobuf2_v4l2,mx6s_capture
+ov9281                 20480  1
+v4l2_fwnode            20480  1 ov9281
+mxc_mipi_csi           20480  1
+sis_i2c_95xx_ts        20480  0
+imx_sdma               24576  2
+shaper_mcu_spaces      49152  2
+shaper_mcu_log         16384  2
+galcore               589824  7
+cryptodev              36864  0
+configfs               32768  1

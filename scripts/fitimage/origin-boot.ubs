@@ -1,0 +1,23 @@
+echo "Running shaper second stage boot script from active partition ${active_partition}"
+
+setenv extra_args "${shaper_boot_args} ${shaper_boot_args_passthrough}"
+
+if test ${handle_buttons} = 1; then
+    echo "Booting into recovery mode"
+    setenv extra_args "recovery=1 ${extra_args}"
+elif test ${handle_buttons} = 2; then
+    echo "Enabling verbose logging"
+    setenv extra_args "loglevel=8 ${extra_args}"
+fi
+
+setenv bootargs "active_partition=${active_partition} ${extra_args}"
+
+echo "Extracting image from fit"
+
+imxtract ${fitaddr} kernel ${loadaddr}
+imxtract ${fitaddr} fdt ${fdtaddr}
+imxtract ${fitaddr} initrd ${initrd_addr}
+setenv initrd_size "0x${filesize}"
+
+echo "Booting Kernel with ${bootargs}"
+booti ${loadaddr} ${initrd_addr}:${initrd_size} ${fdtaddr}

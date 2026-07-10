@@ -1,0 +1,89 @@
+echo "Bootstrapping Davis Origin"
+
+# Notes
+#
+# Comparrison's done on an undefined variable will always result in true
+#
+# end notes
+
+# we have to do this ourselves as
+# altbootcmd is not defined in source
+setenv bump_upgrade_failed_count 'if test -n ${upgrade_failure_count}; then setexpr upgrade_failure_count ${upgrade_failure_count} + 1; else setenv upgrade_failure_count 0; fi'
+setenv switch_active_partition 'if test ${active_partition} = 1; then setenv active_partition 2; else setenv active_partition 1; fi'
+setenv reset_upgrade_vars 'setenv upgrade_available 0; setenv bootcount 0; saveenv'
+setenv handle_upgrade_failed 'echo attempt to boot upgraded OS${active_partition} failed, falling back to prior OS; run switch_active_partition; run reset_upgrade_vars; run bump_upgrade_failed_count; setenv early_shaper_boot_args falling_back_from_failed_upgrade'
+
+if test -n ${bootcount}; then
+    if test ${bootcount} -gt 2; then
+        run handle_upgrade_failed
+    elif test ${bootcount} -gt 0; then
+        echo "attempt ${bootcount} to boot new OS${active_partition}"
+    fi
+fi
+
+echo "Configuring environment"
+setenv shaper_fb_prep_args "fbcon=logo-pos:center,logo-count:1,rotate:1 vt.global_cursor_default=0 consoleblank=0 no_console_suspend=1"
+setenv shaper_system_behavior_args "panic=2 lpj=32000 audit=0 mitigations=off"
+setenv shaper_boot_args "${shaper_fb_prep_args} ${shaper_system_behavior_args} ${early_shaper_boot_args}"
+setenv mmc_load_fit readsignedfit mmc ${mmcdev}:${active_partition} ${fitaddr}
+# identical to sdcard behavior; images are shared
+setenv usb_load_fit readsignedfit usb ${usbdev}:0 ${fitaddr} 0x17F0
+setenv net_load_fit dhcp ${fitaddr} net-boot.itb-signed
+
+if test -n ${console}; then
+    setenv shaper_boot_args "${shaper_boot_args} console=${console}"
+fi
+
+if test -n ${dump_galcore_args} && test ${dump_galcore_args} = 1; then
+	echo "explicitly opting to dump galcore args"
+	setenv shaper_boot_args "galcore.showArgs=1 ${shaper_boot_args}"
+fi
+
+echo "Testing handles"
+if test ${handle_buttons} = 0; then
+
+	# Start the usb stack
+	usb start
+
+	# Try to load fit from
+	if run usb_load_fit; then
+		echo "booting from usb"
+	elif run net_load_fit; then
+		echo "booting from network"
+	else
+		echo "Failed to boot"
+		exit
+	fi
+
+elif run mmc_load_fit; then
+	echo "booting from mmc"
+else
+	if test ${upgrade_available} = 1; then
+		run handle_upgrade_failed; run mmc_load_fit;
+	else
+		echo "Trying boot alternatives"
+
+		# Start the usb stack
+		usb start
+
+		# Try to load fit from
+		if run usb_load_fit; then
+			echo "booting from usb"
+		elif run net_load_fit; then
+			echo "booting from network"
+		else
+			echo "Failed to boot"
+			exit
+		fi
+	fi
+fi
+
+# time to authenticate fitImage
+hab_auth_fitimage_or_fail ${fitaddr}
+
+echo "hab status:start"
+hab_status
+echo "hab status:end"
+
+echo "Launching secondary boot script"
+source ${fitaddr}:boot-script

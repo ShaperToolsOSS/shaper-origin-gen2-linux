@@ -1,0 +1,16 @@
+echo "Running shaper netboot boot script"
+
+setenv extra_args "${shaper_boot_args} ${shaper_boot_args_passthrough}"
+
+setenv rootfs "/dev/nfs ip=dhcp nfsroot=/nfs/nfsroot,v3,tcp"
+setenv bootargs "root=${rootfs} ${extra_args}"
+
+echo "Extracting image from fit"
+
+imxtract ${fitaddr} kernel ${loadaddr}
+imxtract ${fitaddr} fdt ${fdtaddr}
+imxtract ${fitaddr} initrd ${initrd_addr}
+setenv initrd_size "0x${filesize}"
+
+echo "Booting Kernel with ${bootargs}"
+booti ${loadaddr} ${initrd_addr}:${initrd_size} ${fdtaddr}

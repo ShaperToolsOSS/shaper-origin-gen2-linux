@@ -2514,6 +2514,9 @@ struct hci_dev *hci_alloc_dev_priv(int sizeof_priv)
 	hdev->min_le_tx_power = HCI_TX_POWER_INVALID;
 	hdev->max_le_tx_power = HCI_TX_POWER_INVALID;
 
+	/* Log the adjusted Autoconnect Timeout */
+	BT_INFO("HCI LE Autoconnection Time set to %d milliseconds by Shaper", jiffies_to_msecs(hdev->def_le_autoconnect_timeout));
+
 	hdev->rpa_timeout = HCI_DEFAULT_RPA_TIMEOUT;
 	hdev->discov_interleaved_timeout = DISCOV_INTERLEAVED_TIMEOUT;
 	hdev->conn_info_min_age = DEFAULT_CONN_INFO_MIN_AGE;

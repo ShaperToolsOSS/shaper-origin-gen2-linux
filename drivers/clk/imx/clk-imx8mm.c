@@ -522,8 +522,11 @@ static int imx8mm_clocks_probe(struct platform_device *pdev)
 	hws[IMX8MM_CLK_USB_CORE_REF] = imx8m_clk_hw_composite("usb_core_ref", imx8mm_usb_core_sels, base + 0xb100);
 	hws[IMX8MM_CLK_USB_PHY_REF] = imx8m_clk_hw_composite("usb_phy_ref", imx8mm_usb_phy_sels, base + 0xb180);
 	hws[IMX8MM_CLK_GIC] = imx8m_clk_hw_composite_critical("gic", imx8mm_gic_sels, base + 0xb200);
-	hws[IMX8MM_CLK_ECSPI1] = imx8m_clk_hw_composite("ecspi1", imx8mm_ecspi1_sels, base + 0xb280);
-	hws[IMX8MM_CLK_ECSPI2] = imx8m_clk_hw_composite("ecspi2", imx8mm_ecspi2_sels, base + 0xb300);
+
+	/* [SW-7865] Set the SPI buses used by the MCU to 'critical' to prevent getting disabled by the kernel */
+	hws[IMX8MM_CLK_ECSPI1] = imx8m_clk_hw_composite_critical("ecspi1", imx8mm_ecspi1_sels, base + 0xb280);
+	hws[IMX8MM_CLK_ECSPI2] = imx8m_clk_hw_composite_critical("ecspi2", imx8mm_ecspi2_sels, base + 0xb300);
+
 	hws[IMX8MM_CLK_PWM1] = imx8m_clk_hw_composite("pwm1", imx8mm_pwm1_sels, base + 0xb380);
 	hws[IMX8MM_CLK_PWM2] = imx8m_clk_hw_composite("pwm2", imx8mm_pwm2_sels, base + 0xb400);
 	hws[IMX8MM_CLK_PWM3] = imx8m_clk_hw_composite("pwm3", imx8mm_pwm3_sels, base + 0xb480);
@@ -544,7 +547,10 @@ static int imx8mm_clocks_probe(struct platform_device *pdev)
 	hws[IMX8MM_CLK_PCIE2_CTRL] = imx8m_clk_hw_composite("pcie2_ctrl", imx8mm_pcie2_ctrl_sels, base + 0xc000);
 	hws[IMX8MM_CLK_PCIE2_PHY] = imx8m_clk_hw_composite("pcie2_phy", imx8mm_pcie2_phy_sels, base + 0xc080);
 	hws[IMX8MM_CLK_PCIE2_AUX] = imx8m_clk_hw_composite("pcie2_aux", imx8mm_pcie2_aux_sels, base + 0xc100);
-	hws[IMX8MM_CLK_ECSPI3] = imx8m_clk_hw_composite("ecspi3", imx8mm_ecspi3_sels, base + 0xc180);
+
+	/* [SW-7865] Set the SPI buses used by the MCU to 'critical' to prevent getting disabled by the kernel */
+	hws[IMX8MM_CLK_ECSPI3] = imx8m_clk_hw_composite_critical("ecspi3", imx8mm_ecspi3_sels, base + 0xc180);
+
 	hws[IMX8MM_CLK_PDM] = imx8m_clk_hw_composite("pdm", imx8mm_pdm_sels, base + 0xc200);
 	hws[IMX8MM_CLK_VPU_H1] = imx8m_clk_hw_composite("vpu_h1", imx8mm_vpu_h1_sels, base + 0xc280);
 
@@ -619,6 +625,10 @@ static int imx8mm_clocks_probe(struct platform_device *pdev)
 
 	hws[IMX8MM_CLK_DRAM_ALT_ROOT] = imx_clk_hw_fixed_factor("dram_alt_root", "dram_alt", 1, 4);
 	hws[IMX8MM_CLK_DRAM_CORE] = imx_clk_hw_mux2_flags("dram_core_clk", base + 0x9800, 24, 1, imx8mm_dram_core_sels, ARRAY_SIZE(imx8mm_dram_core_sels), CLK_IS_CRITICAL);
+
+	hws[IMX8MM_CLK_RDC_ROOT] = imx_clk_hw_gate4("rdc_root_clk", "ipg_root", base + 0x4310, 0);
+	hws[IMX8MM_CLK_SEMA1_ROOT] = imx_clk_hw_gate4("sema1_root_clk", "ipg_root", base + 0x43d0, 0);
+	hws[IMX8MM_CLK_SEMA2_ROOT] = imx_clk_hw_gate4("sema2_root_clk", "ipg_root", base + 0x43e0, 0);
 
 	hws[IMX8MM_CLK_ARM] = imx_clk_hw_cpu("arm", "arm_a53_core",
 					   hws[IMX8MM_CLK_A53_CORE]->clk,

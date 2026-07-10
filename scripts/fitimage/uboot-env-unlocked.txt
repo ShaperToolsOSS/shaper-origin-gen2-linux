@@ -1,0 +1,13 @@
+active_partition=1
+bootdelay=2
+console=ttymxc1,115200
+fitaddr=0x60000000
+fdtaddr=0x43000000
+initrd_addr=0x43800000
+loadaddr=0x40480000
+m4addr=0x4f1e0000
+m4bootaddr=0x007e0000
+mmcautodetect=yes
+splashimage=0x50000000
+primary_boot_fit=0x000017f0
+bootcmd=readsignedfit mmc ${mmcdev}:0 ${fitaddr} ${primary_boot_fit}; hab_auth_fitimage_or_fail ${fitaddr}; source ${fitaddr}:boot-script

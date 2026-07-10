@@ -1,0 +1,8 @@
+echo "Factory boot script"
+
+echo "Booting from network"
+dhcp ${fitaddr} ${fitimage}
+setenv rootfs "/dev/nfs ip=dhcp nfsroot=/nfs/nfsroot,v3,tcp"
+
+echo "Launching secondary boot script"
+source ${fitaddr}:boot-script

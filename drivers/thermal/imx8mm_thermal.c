@@ -181,6 +181,7 @@ static int imx8mm_tmu_probe_set_calib_v1(struct platform_device *pdev,
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to read OCOTP nvmem cell\n");
 
+	dev_info(dev, "Using real values in imx8mm_tmu_probe_set_calib_v1\n");
 	writel(FIELD_PREP(TASR_BUF_VREF_MASK,
 			  FIELD_GET(ANA0_BUF_VREF_MASK, ana0)) |
 	       FIELD_PREP(TASR_BUF_SLOPE_MASK,
@@ -230,9 +231,12 @@ static int imx8mm_tmu_probe_set_calib_v2(struct platform_device *pdev,
 		       tmu->base + TCALIV(0));
 		writel(FIELD_PREP(TCALIV_SNSR25C_MASK, 0x63c),
 		       tmu->base + TCALIV(1));
+
+		dev_info(dev, "Using blank sample hardware\n");
 		return 0;
 	}
 
+	dev_info(dev, "Using real values in imx8mm_tmu_probe_set_calib_v2\n");
 	writel(FIELD_PREP(TASR_BUF_VERF_SEL_MASK,
 			  FIELD_GET(TRIM2_BUF_VERF_SEL_MASK, trim[0])) |
 	       FIELD_PREP(TASR_BUF_SLOPE_MASK,

@@ -11,6 +11,8 @@
 
 
 #define BRCMF_FIL_ACTION_FRAME_SIZE	1800
+#define BRCMF_AUTH_STATUS_V2_FW_MAJOR	13
+#define BRCMF_AUTH_STATUS_V2_FW_MINOR	3
 
 /* ARP Offload feature flags for arp_ol iovar */
 #define BRCMF_ARP_OL_AGENT		0x00000001
@@ -177,6 +179,11 @@
 #define BRCMF_PMKSA_VER_2		2
 #define BRCMF_PMKSA_VER_3		3
 #define BRCMF_PMKSA_NO_EXPIRY		0xffffffff
+
+#define BRCMF_EXTAUTH_START	1
+#define BRCMF_EXTAUTH_ABORT	2
+#define BRCMF_EXTAUTH_FAIL	3
+#define BRCMF_EXTAUTH_SUCCESS	4
 
 /* MAX_CHUNK_LEN is the maximum length for data passing to firmware in each
  * ioctl. It is relatively small because firmware has small maximum size input
@@ -596,6 +603,70 @@ struct brcmf_wsec_pmk_le {
 struct brcmf_wsec_sae_pwd_le {
 	__le16 key_len;
 	u8 key[BRCMF_WSEC_MAX_SAE_PASSWORD_LEN];
+};
+
+/**
+ * struct brcmf_auth_req_status_le - external auth request and status update
+ *
+ * @flags: flags for external auth status
+ * @peer_mac: peer MAC address
+ * @ssid_len: length of ssid
+ * @ssid: ssid characters
+ */
+struct brcmf_auth_req_status_le {
+	__le16 flags;
+	u8 peer_mac[ETH_ALEN];
+	__le32 ssid_len;
+	u8 ssid[IEEE80211_MAX_SSID_LEN];
+	u8 pmkid[WLAN_PMKID_LEN];
+};
+
+/**
+ * struct brcmf_auth_req_status_v2_le - external auth request with BSS info
+ *
+ * @version: version of the auth request event payload
+ * @len: length of the auth request event payload
+ * @flags: flags for external auth status
+ * @peer_mac: peer MAC address
+ * @ssid_len: length of ssid
+ * @ssid: ssid characters
+ * @pmkid: PMK identifier from firmware
+ * @bss_info_le: optional BSS information for the target AP
+ */
+struct brcmf_auth_req_status_v2_le {
+	__le16 version;
+	__le16 len;
+	__le16 flags;
+	u8 peer_mac[ETH_ALEN];
+	__le32 ssid_len;
+	u8 ssid[IEEE80211_MAX_SSID_LEN];
+	u8 pmkid[WLAN_PMKID_LEN];
+	struct brcmf_bss_info_le bss_info_le[];
+};
+
+/**
+ * struct brcmf_mf_params_le - management frame parameters for mgmt_frame iovar
+ *
+ * @version: version of the iovar
+ * @dwell_time: dwell duration in ms
+ * @len: length of frame data
+ * @frame_control: frame control
+ * @channel: channel
+ * @da: peer MAC address
+ * @bssid: BSS network identifier
+ * @packet_id: packet identifier
+ * @data: frame data
+ */
+struct brcmf_mf_params_le {
+	__le32 version;
+	__le32 dwell_time;
+	__le16 len;
+	__le16 frame_control;
+	__le16 channel;
+	u8 da[ETH_ALEN];
+	u8 bssid[ETH_ALEN];
+	__le32 packet_id;
+	u8 data[1];
 };
 
 /* Used to get specific STA parameters */
